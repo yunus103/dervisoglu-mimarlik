@@ -4,7 +4,7 @@ import { groq } from "next-sanity";
 // Her sayfada bir kez çekilir — header, footer, global ayarlar
 export const layoutQuery = groq`{
   "settings": *[_type == "siteSettings"][0] {
-    siteName, siteTagline,
+    siteName, siteTagline, enableProjectsPage, enableBlogPage,
     logo { asset->{ _id, url, metadata { lqip, dimensions } }, hotspot, crop },
     logoHeight,
     favicon { asset->{ _id, url } },

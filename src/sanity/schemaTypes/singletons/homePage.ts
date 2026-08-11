@@ -14,8 +14,22 @@ export const homePageType = defineType({
   ],
   fields: [
     // Hero Group
-    defineField({ name: "heroTitle", title: "Hero Başlık", type: "string", group: "hero", validation: (Rule) => Rule.required() }),
-    defineField({ name: "heroSubtitle", title: "Hero Alt Başlık", type: "text", rows: 3, group: "hero" }),
+    defineField({
+      name: "heroTitle",
+      title: "Hero Başlık",
+      type: "string",
+      group: "hero",
+      initialValue: "Hayallerinizi Modern Mimari ile Şekillendiriyoruz",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "heroSubtitle",
+      title: "Hero Alt Başlık",
+      type: "text",
+      rows: 3,
+      group: "hero",
+      initialValue: "Dervişoğlu Mimarlık olarak estetik, fonksiyonel ve nitelikli mimari projeler ile yaşam alanlarınıza değer katıyoruz.",
+    }),
     defineField({
       name: "heroImage",
       title: "Hero Görseli",
@@ -24,7 +38,13 @@ export const homePageType = defineType({
       options: { hotspot: true },
       fields: [defineField({ name: "alt", title: "Alt Metni", type: "string", validation: (Rule) => Rule.required() })],
     }),
-    defineField({ name: "heroCtaLabel", title: "Hero Buton Metni", type: "string", group: "hero" }),
+    defineField({
+      name: "heroCtaLabel",
+      title: "Hero Buton Metni",
+      type: "string",
+      group: "hero",
+      initialValue: "Projelerimizi İnceleyin",
+    }),
     defineField({
       name: "heroCtaLink",
       title: "Hero Buton Linki",
@@ -69,7 +89,14 @@ export const homePageType = defineType({
 
     // About Preview Group
     defineField({ name: "aboutTitle", title: "Hakkımızda Bölüm Başlığı", type: "string", group: "about", initialValue: "Hakkımızda" }),
-    defineField({ name: "aboutSubtitle", title: "Hakkımızda Bölüm Alt Başlığı", type: "text", rows: 2, group: "about" }),
+    defineField({
+      name: "aboutSubtitle",
+      title: "Hakkımızda Bölüm Alt Başlığı",
+      type: "text",
+      rows: 2,
+      group: "about",
+      initialValue: "Köklü tecrübemiz ve yenilikçi vizyonumuzla mimari ve inşaat projelerinizde yanınızdayız.",
+    }),
     defineField({ name: "aboutText", title: "Hakkımızda Kısa Yazı", type: "array", of: [{ type: "block" }], group: "about" }),
     defineField({
       name: "aboutImage",
@@ -84,7 +111,14 @@ export const homePageType = defineType({
 
     // Services Preview Group
     defineField({ name: "servicesTitle", title: "Hizmetler Bölüm Başlığı", type: "string", group: "services", initialValue: "Hizmetlerimiz" }),
-    defineField({ name: "servicesSubtitle", title: "Hizmetler Bölüm Alt Başlığı", type: "text", rows: 2, group: "services" }),
+    defineField({
+      name: "servicesSubtitle",
+      title: "Hizmetler Bölüm Alt Başlığı",
+      type: "text",
+      rows: 2,
+      group: "services",
+      initialValue: "Mimari tasarımdan anahtar teslim uygulamaya kadar geniş bir yelpazede profesyonel hizmet sunuyoruz.",
+    }),
     defineField({
       name: "featuredServices",
       title: "Öne Çıkan Hizmetler",
@@ -96,7 +130,14 @@ export const homePageType = defineType({
 
     // Projects Preview Group
     defineField({ name: "projectsTitle", title: "Projeler Bölüm Başlığı", type: "string", group: "projects", initialValue: "Projelerimiz" }),
-    defineField({ name: "projectsSubtitle", title: "Projeler Bölüm Alt Başlığı", type: "text", rows: 2, group: "projects" }),
+    defineField({
+      name: "projectsSubtitle",
+      title: "Projeler Bölüm Alt Başlığı",
+      type: "text",
+      rows: 2,
+      group: "projects",
+      initialValue: "Tamamladığımız ve devam eden nitelikli projelerimizden örnekler.",
+    }),
     defineField({
       name: "featuredProjects",
       title: "Öne Çıkan Projeler",
@@ -108,7 +149,14 @@ export const homePageType = defineType({
 
     // Blog Preview Group
     defineField({ name: "blogTitle", title: "Blog Bölüm Başlığı", type: "string", group: "blog", initialValue: "Son Haberler & Blog" }),
-    defineField({ name: "blogSubtitle", title: "Blog Bölüm Alt Başlığı", type: "text", rows: 2, group: "blog" }),
+    defineField({
+      name: "blogSubtitle",
+      title: "Blog Bölüm Alt Başlığı",
+      type: "text",
+      rows: 2,
+      group: "blog",
+      initialValue: "Mimari ve inşaat dünyasından güncel yazılar, ipuçları ve yenilikler.",
+    }),
     defineField({
       name: "featuredPosts",
       title: "Öne Çıkan Blog Yazıları",

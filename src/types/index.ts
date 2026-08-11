@@ -65,6 +65,8 @@ export interface ContactInfo {
 export interface SiteSettings {
   siteName: string;
   siteTagline?: string;
+  enableProjectsPage?: boolean;
+  enableBlogPage?: boolean;
   logo?: SanityImage;
   logoHeight?: number;
   favicon?: { asset: { url: string } };

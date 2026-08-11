@@ -59,8 +59,8 @@ export const getLayoutData = cache(
 export async function buildMetadata(params: BuildMetadataParams = {}): Promise<Metadata> {
   const { settings } = await getLayoutData();
 
-  const siteName = settings?.siteName || "Site Adı";
-  const siteTagline = settings?.siteTagline || "";
+  const siteName = settings?.siteName || "Dervişoğlu Mimarlık";
+  const siteTagline = settings?.siteTagline || "Mimari Tasarım & Uygulama";
   const defaultMetaTitle = settings?.defaultSeo?.metaTitle || "";
   const isHomePage = params.canonicalPath === "/";
 

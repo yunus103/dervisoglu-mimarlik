@@ -5,8 +5,22 @@ export const siteSettingsType = defineType({
   title: "Site Ayarları",
   type: "document",
   fields: [
-    defineField({ name: "siteName", title: "Site Adı", type: "string", validation: (Rule) => Rule.required() }),
-    defineField({ name: "siteTagline", title: "Slogan", type: "string" }),
+    defineField({ name: "siteName", title: "Site Adı", type: "string", initialValue: "Dervişoğlu Mimarlık", validation: (Rule) => Rule.required() }),
+    defineField({ name: "siteTagline", title: "Slogan", type: "string", initialValue: "Mimari Tasarım & Uygulama" }),
+    defineField({
+      name: "enableProjectsPage",
+      title: "Projeler Sayfasını Aktif Et",
+      type: "boolean",
+      initialValue: true,
+      description: "İşaretlenirse menüde ve sitede Projeler bölümü aktif olur.",
+    }),
+    defineField({
+      name: "enableBlogPage",
+      title: "Blog Sayfasını Aktif Et",
+      type: "boolean",
+      initialValue: true,
+      description: "İşaretlenirse menüde ve sitede Blog bölümü aktif olur.",
+    }),
     defineField({
       name: "logo",
       title: "Logo",

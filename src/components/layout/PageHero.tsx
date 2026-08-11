@@ -40,7 +40,7 @@ export function PageHero({
         <div className="max-w-3xl">
           <FadeIn direction="up" duration={0.6}>
             {/* Breadcrumbs */}
-            <Breadcrumbs className={`mb-6 ${backgroundImage?.asset ? "text-white/60 [&_a]:text-white/60 [&_a:hover]:text-white [&_span]:text-white" : ""}`} />
+            <Breadcrumbs customTitle={title} className={`mb-6 ${backgroundImage?.asset ? "text-white/60 [&_a]:text-white/60 [&_a:hover]:text-white [&_span]:text-white" : ""}`} />
 
             <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 ${backgroundImage?.asset ? "text-white" : "text-foreground"}`}>
               {title}

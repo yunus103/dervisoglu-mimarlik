@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { RiCheckboxCircleLine } from "react-icons/ri";
 
 const schema = z.object({
   name: z.string().min(2, "İsim en az 2 karakter olmalı"),
@@ -89,9 +90,11 @@ export function ContactForm({
 
   if (status === "success") {
     return (
-      <div className="rounded-lg border bg-card p-8 text-center">
-        <div className="text-4xl mb-4">✅</div>
-        <p className="text-lg font-medium">{successMessage}</p>
+      <div className="rounded-md border border-border bg-card p-8 text-center space-y-3">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+          <RiCheckboxCircleLine size={32} />
+        </div>
+        <p className="text-lg font-semibold text-foreground">{successMessage}</p>
       </div>
     );
   }

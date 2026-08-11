@@ -11,7 +11,21 @@ type BreadcrumbItem = {
   active?: boolean;
 };
 
-export function Breadcrumbs({ items, className = "" }: { items?: BreadcrumbItem[], className?: string }) {
+const ROUTE_NAME_MAP: Record<string, string> = {
+  hakkimizda: "Hakkımızda",
+  hizmetler: "Hizmetlerimiz",
+  projeler: "Projelerimiz",
+  blog: "Blog & Haberler",
+  iletisim: "İletişim",
+};
+
+interface BreadcrumbsProps {
+  items?: BreadcrumbItem[];
+  customTitle?: string;
+  className?: string;
+}
+
+export function Breadcrumbs({ items, customTitle, className = "" }: BreadcrumbsProps) {
   const pathname = usePathname();
   
   // Eğer dışarıdan liste gelmezse current path'ten üret
@@ -19,12 +33,24 @@ export function Breadcrumbs({ items, className = "" }: { items?: BreadcrumbItem[
     const paths = pathname.split("/").filter((path) => path !== "");
     const breadcrumbs: BreadcrumbItem[] = paths.map((path, index) => {
       const href = `/${paths.slice(0, index + 1).join("/")}`;
-      // Slug temizliği (tireleri boşluk yap, baş harfleri büyüt)
-      const label = path
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, (l) => l.toUpperCase());
+      const isLast = index === paths.length - 1;
+
+      let label = ROUTE_NAME_MAP[path.toLowerCase()];
+      
+      if (!label) {
+        if (isLast && customTitle) {
+          label = customTitle;
+        } else {
+          // Fallback slug temizliği (tireleri boşluk yap, baş harfleri büyüt)
+          label = path
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (l) => l.toUpperCase());
+        }
+      } else if (isLast && customTitle) {
+        label = customTitle;
+      }
         
-      return { label, href, active: index === paths.length - 1 };
+      return { label, href, active: isLast };
     });
     return breadcrumbs;
   };

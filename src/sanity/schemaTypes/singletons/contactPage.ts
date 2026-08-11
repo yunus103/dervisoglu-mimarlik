@@ -11,8 +11,8 @@ export const contactPageType = defineType({
   ],
   fields: [
     // Page Hero Group
-    defineField({ name: "heroTitle", title: "Hero Başlık", type: "string", group: "hero", description: "Sayfa üst kısmında duracak ana başlık. Boş bırakılırsa Sayfa Başlığı kullanılır." }),
-    defineField({ name: "heroSubtitle", title: "Hero Alt Başlık / Kısa Açıklama", type: "text", rows: 2, group: "hero", description: "Sayfa üst kısmında duracak kısa açıklama yazısı." }),
+    defineField({ name: "heroTitle", title: "Hero Başlık", type: "string", group: "hero", initialValue: "İletişim", description: "Sayfa üst kısmında duracak ana başlık. Boş bırakılırsa Sayfa Başlığı kullanılır." }),
+    defineField({ name: "heroSubtitle", title: "Hero Alt Başlık / Kısa Açıklama", type: "text", rows: 2, group: "hero", initialValue: "Projeleriniz ve sorularınız için bizimle iletişime geçin.", description: "Sayfa üst kısmında duracak kısa açıklama yazısı." }),
     defineField({
       name: "heroImage",
       title: "Hero Arka Plan Görseli",
@@ -23,8 +23,8 @@ export const contactPageType = defineType({
       description: "Hero arka plan resmi. Yüklenmezse şık bir degrade renk arka planı kullanılır."
     }),
     // Content Group
-    defineField({ name: "pageTitle", title: "Sayfa Başlığı", type: "string", group: "content", validation: (Rule) => Rule.required() }),
-    defineField({ name: "pageSubtitle", title: "Giriş Metni", type: "text", rows: 3, group: "content" }),
+    defineField({ name: "pageTitle", title: "Sayfa Başlığı", type: "string", group: "content", initialValue: "İletişim", validation: (Rule) => Rule.required() }),
+    defineField({ name: "pageSubtitle", title: "Giriş Metni", type: "text", rows: 3, group: "content", initialValue: "Sorularınız, proje fikirleriniz veya danışmanlık talepleriniz için form üzerinden veya doğrudan iletişim bilgilerimizden bize ulaşabilirsiniz." }),
     defineField({ name: "formTitle", title: "Form Başlığı", type: "string", group: "content", initialValue: "Bize Ulaşın" }),
     defineField({
       name: "successMessage",
