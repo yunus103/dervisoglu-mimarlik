@@ -1,7 +1,4 @@
 import { FadeIn } from "@/components/ui/FadeIn";
-import { SanityImage } from "@/components/ui/SanityImage";
-import { AnimateGroup } from "@/components/ui/AnimateGroup";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Service } from "@/types";
 
@@ -11,77 +8,129 @@ interface ServicesSectionProps {
   services?: Service[];
 }
 
+/**
+ * Hizmetler kart ızgarası olarak değil, iki kategoriye ayrılmış bir liste
+ * olarak verilir. Kategoriler firmanın gerçek hizmet yapısını birebir
+ * karşılar ve altı hizmetin tamamı tek ekranda görünür.
+ */
+const categories = [
+  {
+    label: "Mimari & Tasarım Hizmetleri",
+    items: [
+      {
+        title: "Mimari Projelendirme",
+        desc: "Avan proje, uygulama projesi ve ruhsat çizimleri",
+        slug: "mimari-projelendirme",
+      },
+      {
+        title: "İç Mimarlık & Konsept Tasarım",
+        desc: "Mekân organizasyonu, 3D görselleştirme ve malzeme seçimi",
+        slug: "ic-mimarlik-konsept-tasarim",
+      },
+      {
+        title: "Belediye & İmar Takibi",
+        desc: "İmar durumu, ruhsat ve resmi kurum süreç yönetimi",
+        slug: "belediye-imar-takibi",
+      },
+    ],
+  },
+  {
+    label: "İnşaat & Uygulama Hizmetleri",
+    items: [
+      {
+        title: "İnşaat Müteahhitliği & Kat Karşılığı",
+        desc: "Konut ve ticari yapı üretimi",
+        slug: "insaat-muteahhitligi-kat-karsiligi",
+      },
+      {
+        title: "Taahhüt & Şantiye Yönetimi",
+        desc: "Bütçe ve zaman planına uygun inşa süreci",
+        slug: "taahhut-santiye-yonetimi",
+      },
+      {
+        title: "Kentsel Dönüşüm Danışmanlığı",
+        desc: "Riskli yapı tespiti, bina yenileme ve hak sahipliği süreçleri",
+        slug: "kentsel-donusum-danismanligi",
+      },
+    ],
+  },
+];
+
 export function ServicesSection({
   title,
   subtitle,
   services = [],
 }: ServicesSectionProps) {
   const displayTitle = title || "Hizmetlerimiz";
-  const displaySubtitle = subtitle || "Size en uygun profesyonel çözümlerimiz.";
+  const displaySubtitle =
+    subtitle ||
+    "Mimari projelendirmeden anahtar teslim uygulamaya kadar iki ana başlıkta hizmet verilmektedir.";
+
+  // Sanity'de hizmet tanımlıysa aynı listeye yerleştirilir.
+  const hasSanityServices = services.length > 0;
+  const half = Math.ceil(services.length / 2);
+  const columns = hasSanityServices
+    ? categories.map((c, i) => ({
+        ...c,
+        items: services.slice(i * half, (i + 1) * half).map((s) => ({
+          title: s.title ?? "",
+          desc: "",
+          slug: s.slug?.current ?? "",
+        })),
+      }))
+    : categories;
 
   return (
-    <section className="py-20 md:py-28 bg-muted/40">
-      <div className="container mx-auto px-4">
-        
-        {/* Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16 space-y-4">
-          <FadeIn direction="up">
-            <span className="text-sm font-semibold tracking-wider text-primary uppercase">
-              {displayTitle}
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2 text-foreground">
-              {displaySubtitle}
-            </h2>
-          </FadeIn>
-        </div>
+    <section className="border-t border-border bg-background py-20 md:py-28">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
+        <FadeIn direction="up">
+          <h2 className="display text-3xl font-extrabold leading-[1.05] text-primary sm:text-4xl lg:text-5xl">
+            {displayTitle}
+          </h2>
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+            {displaySubtitle}
+          </p>
+        </FadeIn>
 
-        {/* Content */}
-        {services && services.length > 0 ? (
-          <div className="space-y-12">
-            <AnimateGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {services.slice(0, 3).map((service: Service) => (
-                <Link key={service.slug?.current} href={`/hizmetler/${service.slug?.current}`} className="group block">
-                  <article className="border rounded-xl overflow-hidden bg-card hover:shadow-xl transition-all duration-300 h-full flex flex-col hover:-translate-y-1">
-                    {service.mainImage && (
-                      <div className="relative aspect-video overflow-hidden">
-                        <SanityImage
-                          image={service.mainImage}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    )}
-                    <div className="p-6 flex-grow flex flex-col justify-between">
-                      <div>
-                        <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                          {service.title}
-                        </h3>
-                      </div>
-                      <div className="mt-6">
-                        <span className="text-primary font-semibold text-xs tracking-wider uppercase group-hover:underline underline-offset-4 flex items-center">
-                          Detayları Gör
-                          <span className="ml-1 group-hover:translate-x-1 transition-transform">→</span>
+        <div className="mt-14 grid grid-cols-1 gap-x-12 gap-y-14 md:mt-20 lg:grid-cols-2">
+          {columns.map((column, ci) => (
+            <FadeIn key={column.label} direction="up" delay={ci * 0.1}>
+              <div>
+                <h3 className="display border-b-2 border-primary pb-3 text-lg font-bold text-primary">
+                  {column.label}
+                </h3>
+
+                <ul>
+                  {column.items.map((item) => (
+                    <li key={item.slug || item.title}>
+                      <Link
+                        href={item.slug ? `/hizmetler/${item.slug}` : "/hizmetler"}
+                        className="group flex items-baseline gap-5 border-b border-border py-6 transition-colors hover:bg-primary focus-visible:bg-primary focus-visible:outline-none"
+                      >
+                        <span className="min-w-0 flex-1 px-1">
+                          <span className="display block text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-white group-focus-visible:text-white lg:text-2xl">
+                            {item.title}
+                          </span>
+                          {item.desc && (
+                            <span className="mt-1.5 block text-sm leading-relaxed text-muted-foreground transition-colors group-hover:text-white/70 group-focus-visible:text-white/70">
+                              {item.desc}
+                            </span>
+                          )}
                         </span>
-                      </div>
-                    </div>
-                  </article>
-                </Link>
-              ))}
-            </AnimateGroup>
-            
-            <FadeIn delay={0.2} className="text-center pt-4">
-              <Button variant="outline" size="lg" render={<Link href="/hizmetler" />}>
-                Tüm Hizmetleri Gör
-              </Button>
+                        <span
+                          aria-hidden
+                          className="shrink-0 pr-1 text-lg text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-white group-focus-visible:text-white"
+                        >
+                          →
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </FadeIn>
-          </div>
-        ) : (
-          <FadeIn>
-            <p className="text-muted-foreground text-center py-12">Henüz öne çıkarılmış bir hizmet bulunmuyor.</p>
-          </FadeIn>
-        )}
-
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -1,7 +1,8 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { cachedFetch } from "@/sanity/lib/client";
 import { blogListQuery, blogCategoriesQuery, blogPageQuery } from "@/sanity/lib/queries";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, getLayoutData } from "@/lib/seo";
 import { BlogFilter } from "@/components/blog/BlogFilter";
 import { PageHero } from "@/components/layout/PageHero";
 import { BlogPage as BlogPageType, BlogPost, BlogCategory } from "@/types";
@@ -16,6 +17,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BlogListPage() {
+  const { settings } = await getLayoutData();
+  if (settings?.enableBlogPage === false) {
+    notFound();
+  }
+
   const [posts, categories, pageData] = await Promise.all([
     cachedFetch<BlogPost[]>(blogListQuery, {}, { next: { tags: ["blog:list", "blog:categories"] } }),
     cachedFetch<BlogCategory[]>(blogCategoriesQuery, {}, { next: { tags: ["blog:categories"] } }),

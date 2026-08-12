@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { buildMetadata, getLayoutData } from "@/lib/seo";
 
@@ -7,15 +7,19 @@ import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/components/seo/JsonLd";
 import NextTopLoader from "nextjs-toploader";
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
+// Tek süper-aile: başlıklarda genişletilmiş (wdth), gövdede normal kesim kullanılır.
+// latin-ext, Türkçe karakterlerin (ş ğ ı İ ç ö ü) doğru render edilmesi için zorunlu.
+const archivo = Archivo({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-archivo",
   display: "swap",
+  axes: ["wdth"],
 });
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-plus-jakarta",
+// Sadece gerçek veri taşıyan yerlerde: ay, süre, m², ada/parsel.
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
@@ -27,7 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { settings } = await getLayoutData();
 
   return (
-    <html lang="tr" suppressHydrationWarning className={`${outfit.variable} ${plusJakartaSans.variable}`}>
+    <html lang="tr" suppressHydrationWarning className={`${archivo.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans antialiased">
         <noscript>
           <style>{`[data-fade-in]{opacity:1!important;transform:none!important}`}</style>

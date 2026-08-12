@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import { cache } from "react";
+import { notFound } from "next/navigation";
 import { client, cachedFetch } from "@/sanity/lib/client";
 import { projectsPageQuery, projectListQuery } from "@/sanity/lib/queries";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, getLayoutData } from "@/lib/seo";
 import { PageHero } from "@/components/layout/PageHero";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { FadeIn } from "@/components/ui/FadeIn";
@@ -26,6 +27,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProjectsHubPage() {
+  const { settings } = await getLayoutData();
+  if (settings?.enableProjectsPage === false) {
+    notFound();
+  }
+
   const [projects, pageData] = await Promise.all([
     cachedFetch<Project[]>(projectListQuery, {}, { next: { tags: ["project:list"] } }),
     getProjectsPageData(),
@@ -45,7 +51,7 @@ export default async function ProjectsHubPage() {
           <AnimateGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projects.map((project: Project) => (
               <Link key={project.slug?.current} href={`/projeler/${project.slug?.current}`} className="group block">
-                <article className="border rounded-xl overflow-hidden bg-card hover:shadow-xl transition-all duration-300 h-full flex flex-col hover:-translate-y-1">
+                <article className="border border-border/80 rounded-md overflow-hidden bg-card hover:shadow-xl transition-all duration-300 h-full flex flex-col hover:-translate-y-1">
                   {project.mainImage && (
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <SanityImage
@@ -58,7 +64,7 @@ export default async function ProjectsHubPage() {
                   )}
                   <div className="p-6 flex-grow flex flex-col justify-between">
                     <div>
-                      <h2 className="font-bold text-xl mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                      <h2 className="font-heading font-bold text-xl mb-3 group-hover:text-primary transition-colors line-clamp-2">
                         {project.title}
                       </h2>
                     </div>
@@ -81,12 +87,12 @@ export default async function ProjectsHubPage() {
 
         {/* CTA Section */}
         {pageData?.ctaLabel && pageData?.ctaLink && (
-          <FadeIn className="mt-16 md:mt-24 p-8 md:p-12 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-background border text-center max-w-4xl mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">Bir Projeniz mi Var?</h3>
+          <FadeIn className="mt-16 md:mt-24 p-8 md:p-12 rounded-md bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-border text-center max-w-4xl mx-auto">
+            <h3 className="font-heading text-2xl md:text-3xl font-bold mb-4">Bir Projeniz mi Var?</h3>
             <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
               Hayalinizdeki projeyi birlikte gerçeğe dönüştürelim. Uzman ekibimizle konuşmak için hemen iletişime geçin.
             </p>
-            <Button size="lg" render={<Link href={pageData.ctaLink} />}>
+            <Button size="lg" className="rounded-md font-semibold" render={<Link href={pageData.ctaLink} />}>
               {pageData.ctaLabel}
             </Button>
           </FadeIn>

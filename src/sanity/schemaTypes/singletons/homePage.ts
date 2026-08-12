@@ -8,6 +8,7 @@ export const homePageType = defineType({
     { name: "hero", title: "Hero Bölümü" },
     { name: "about", title: "Hakkımızda Önizleme" },
     { name: "services", title: "Hizmetler Önizleme" },
+    { name: "process", title: "Proje Süreci Bölümü" },
     { name: "projects", title: "Projeler Önizleme" },
     { name: "blog", title: "Blog Önizleme" },
     { name: "seo", title: "SEO Ayarları" },
@@ -126,6 +127,45 @@ export const homePageType = defineType({
       type: "array",
       group: "services",
       of: [{ type: "reference", to: [{ type: "service" }] }],
+    }),
+
+    // Process Preview Group
+    defineField({
+      name: "processTitle",
+      title: "Süreç Bölüm Başlığı",
+      type: "string",
+      group: "process",
+      initialValue: "4 Adımda Proje Sürecimiz",
+    }),
+    defineField({
+      name: "processSubtitle",
+      title: "Süreç Bölüm Alt Başlığı",
+      type: "text",
+      rows: 2,
+      group: "process",
+      initialValue: "İlk keşiften anahtar teslim teslime kadar tüm aşamaları şeffaf ve disiplinli bir şekilde yönetiyoruz.",
+    }),
+    defineField({
+      name: "processSteps",
+      title: "Süreç Adımları",
+      type: "array",
+      group: "process",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({ name: "stepNumber", title: "Adım Numarası", type: "string", description: "Örn: 01" }),
+            defineField({ name: "title", title: "Adım Başlığı", type: "string" }),
+            defineField({ name: "description", title: "Açıklama", type: "text", rows: 2 }),
+          ],
+        },
+      ],
+      initialValue: [
+        { stepNumber: "01", title: "Keşif & Konsept Tasarım", description: "İhtiyaçlarınızı dinliyor, arsa ve mekân analizi yaparak ilk konsept mimari çizimleri hazırlıyoruz." },
+        { stepNumber: "02", title: "Projelendirme & Ruhsat", description: "Statik, elektrik, mekanik ve mimari projeleri eksiksiz hazırlayıp belediye ruhsat süreçlerini yürütüyoruz." },
+        { stepNumber: "03", title: "İnşaat & Saha Uygulaması", description: "Kaliteli malzeme ve uzman şantiye ekibimizle projeyi birebir sahada hayata geçiriyoruz." },
+        { stepNumber: "04", title: "Anahtar Teslim & Danışmanlık", description: "Tüm denetimleri tamamlayıp yapıyı eksiksiz teslim ediyor, satış sonrası destek sunuyoruz." },
+      ],
     }),
 
     // Projects Preview Group

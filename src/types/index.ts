@@ -166,6 +166,12 @@ export type BlogPage = InnerPageWithCta;
 export type ServicesPage = InnerPageWithCta;
 export type ProjectsPage = InnerPageWithCta;
 
+export interface ProcessStep {
+  stepNumber?: string;
+  title: string;
+  description: string;
+}
+
 export interface HomePage {
   heroTitle: string;
   heroSubtitle?: string;
@@ -181,6 +187,9 @@ export interface HomePage {
   servicesTitle?: string;
   servicesSubtitle?: string;
   featuredServices?: Service[];
+  processTitle?: string;
+  processSubtitle?: string;
+  processSteps?: ProcessStep[];
   projectsTitle?: string;
   projectsSubtitle?: string;
   featuredProjects?: Project[];

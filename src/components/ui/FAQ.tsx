@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { RiAddLine, RiSubtractLine } from "react-icons/ri";
 import { JsonLd, faqPageJsonLd } from "@/components/seo/JsonLd";
 
 type FAQItem = {
@@ -20,42 +19,46 @@ export function FAQ({ items, className = "" }: { items: FAQItem[], className?: s
       {/* Automate FAQPage Structured Data injection */}
       <JsonLd data={faqPageJsonLd(items)} />
 
-      <div className={`space-y-4 ${className}`}>
-        {items.map((item, index) => (
-          <div 
-            key={index} 
-            className={`border rounded-xl transition-all duration-300 ${activeIndex === index ? "bg-muted/30 border-primary/20 shadow-sm" : "bg-card hover:bg-muted/20"}`}
-          >
-            <button
-              onClick={() => setActiveIndex(activeIndex === index ? null : index)}
-              className="flex w-full items-center justify-between p-5 text-left transition-all"
-              aria-expanded={activeIndex === index}
-            >
-              <span className="font-semibold text-lg md:text-xl pr-4">{item.question}</span>
-              <div className={`shrink-0 rounded-full p-1 transition-colors ${activeIndex === index ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-                {activeIndex === index ? (
-                  <RiSubtractLine size={24} />
-                ) : (
-                  <RiAddLine size={24} />
-                )}
-              </div>
-            </button>
-            
-            {/* DOM-persistent & Pure-CSS/Motion-transitioned for full search indexing */}
-            <motion.div
-              initial={false}
-              animate={{ 
-                height: activeIndex === index ? "auto" : 0
-              }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="overflow-hidden"
-            >
-              <div className="p-5 pt-0 text-muted-foreground text-base leading-relaxed">
-                {item.answer}
-              </div>
-            </motion.div>
-          </div>
-        ))}
+      <div className={className}>
+        {items.map((item, index) => {
+          const isOpen = activeIndex === index;
+          return (
+            <div key={index} className="border-t border-border last:border-b">
+              <button
+                onClick={() => setActiveIndex(isOpen ? null : index)}
+                className="group flex w-full items-start justify-between gap-6 py-6 text-left transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                aria-expanded={isOpen}
+              >
+                <span className="display max-w-[46ch] text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary md:text-xl">
+                  {item.question}
+                </span>
+                <span
+                  aria-hidden
+                  className="relative mt-2 h-3 w-3 shrink-0 text-primary"
+                >
+                  <span className="absolute left-0 top-1/2 h-px w-3 -translate-y-1/2 bg-current" />
+                  <span
+                    className={`absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 bg-current transition-transform duration-300 ${
+                      isOpen ? "scale-y-0" : "scale-y-100"
+                    }`}
+                  />
+                </span>
+              </button>
+
+              {/* DOM-persistent & Pure-CSS/Motion-transitioned for full search indexing */}
+              <motion.div
+                initial={false}
+                animate={{ height: isOpen ? "auto" : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <div className="max-w-prose pb-7 text-base leading-relaxed text-muted-foreground">
+                  {item.answer}
+                </div>
+              </motion.div>
+            </div>
+          );
+        })}
       </div>
     </>
   );

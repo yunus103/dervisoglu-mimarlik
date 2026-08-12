@@ -29,9 +29,17 @@ export function Header({ settings, navigation }: { settings: SiteSettings; navig
   const [menuOpen, setMenuOpen] = useState(false);
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
 
-  const rawLinks: NavItem[] = navigation?.headerLinks && navigation.headerLinks.length > 0
+  const baseLinks: NavItem[] = navigation?.headerLinks && navigation.headerLinks.length > 0
     ? navigation.headerLinks
     : defaultNavLinks;
+
+  // Sanity enableProjectsPage & enableBlogPage switchlerine göre dinamik filtreleme
+  const rawLinks = baseLinks.filter((item) => {
+    const href = resolveHref(item);
+    if (href === "/projeler" && settings?.enableProjectsPage === false) return false;
+    if (href === "/blog" && settings?.enableBlogPage === false) return false;
+    return true;
+  });
 
   useEffect(() => {
     if (menuOpen) {
@@ -187,7 +195,6 @@ function DesktopNavItem({ item, active }: { item: NavItem; active: boolean }) {
         )}
       >
         {item.label}
-        {/* Subtle architectural underline indicator */}
         <span
           className={cn(
             "absolute bottom-0 left-0 h-[2px] w-0 bg-primary transition-all duration-300 group-hover:w-full",

@@ -1,72 +1,118 @@
-import { FadeIn } from "@/components/ui/FadeIn";
+"use client";
+
+import { useState } from "react";
 import { SanityImage } from "@/components/ui/SanityImage";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { QuickQuoteModal } from "@/components/forms/QuickQuoteModal";
+import { StageAxis } from "./StageAxis";
 import { SanityImage as SanityImageType, CtaLink } from "@/types";
 
 interface HeroSectionProps {
-  data: {
+  data?: {
     heroImage?: SanityImageType;
     heroTitle?: string;
     heroSubtitle?: string;
     heroCtaLabel?: string;
     heroCtaLink?: CtaLink;
   };
+  phone?: string;
 }
 
 export function resolveLink(linkData?: CtaLink) {
-  if (!linkData) return "/";
-  if (linkData.linkType === "manual") return linkData.manual || "/";
-  
+  if (!linkData) return "/projeler";
+  if (linkData.linkType === "manual") return linkData.manual || "/projeler";
+
   const ref = linkData.internal;
-  if (!ref || !ref._type) return "/";
-  
+  if (!ref || !ref._type) return "/projeler";
+
   switch (ref._type) {
-    case "service": return `/hizmetler/${ref.slug}`;
-    case "project": return `/projeler/${ref.slug}`;
-    case "blogPost": return `/${ref.slug}`;
-    case "aboutPage": return `/hakkimizda`;
-    case "contactPage": return `/iletisim`;
-    default: return "/";
+    case "service":
+      return `/hizmetler/${ref.slug}`;
+    case "project":
+      return `/projeler/${ref.slug}`;
+    case "blogPost":
+      return `/${ref.slug}`;
+    case "aboutPage":
+      return `/hakkimizda`;
+    case "contactPage":
+      return `/iletisim`;
+    default:
+      return "/projeler";
   }
 }
 
-export function HeroSection({ data }: HeroSectionProps) {
-  return (
-    <section className="relative min-h-[80vh] flex items-center">
-      {data?.heroImage && (
-        <div className="absolute inset-0 z-0">
-          <SanityImage
-            image={data.heroImage}
-            fill
-            sizes="100vw"
-            quality={90}
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-black/50" />
-        </div>
-      )}
+export function HeroSection({ data, phone }: HeroSectionProps) {
+  const [isQuoteOpen, setIsQuoteOpen] = useState(false);
 
-      <div className="relative z-10 container mx-auto px-4 py-24">
-        <FadeIn direction="up" duration={0.7}>
-          {data?.heroTitle && (
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 max-w-3xl">
-              {data.heroTitle}
-            </h1>
+  const title = data?.heroTitle || "Arsadan anahtara, tek çatı altında";
+  const subtitle =
+    data?.heroSubtitle ||
+    "Mimari proje, belediye ruhsatı, şantiye ve teslim süreçlerinin tamamı Dervişoğlu Mimarlık bünyesindeki ekipler tarafından yürütülür.";
+  const ctaLabel = data?.heroCtaLabel || "Ön fizibilite talep edin";
+
+  return (
+    <>
+      {/* Header 5rem yer kaplar; hero onu tamamlayarak tam ekran olur.
+          svh birimi, mobil tarayıcı adres çubuğu açılıp kapanırken
+          yüksekliğin zıplamasını engeller. */}
+      <section className="relative flex min-h-[calc(100svh-5rem)] flex-col bg-primary text-white">
+        {/* Arka plan fotoğrafı — çerçevesiz, tam kanama */}
+        <div aria-hidden className="absolute inset-0 overflow-hidden">
+          {data?.heroImage?.asset ? (
+            <>
+              <SanityImage
+                image={data.heroImage}
+                fill
+                sizes="100vw"
+                quality={90}
+                className="object-cover"
+                priority
+              />
+              {/* Metnin okunabilirliği için alttan yukarı koyulaşan katman */}
+              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/80 to-primary/35" />
+              <div className="absolute inset-0 bg-primary/25" />
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-[linear-gradient(160deg,#0F172A_0%,#1E3A5F_55%,#24476F_100%)]" />
           )}
-          {data?.heroSubtitle && (
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl">
-              {data.heroSubtitle}
-            </p>
-          )}
-          {data?.heroCtaLabel && data?.heroCtaLink && (
-            <Button size="lg" render={<Link href={resolveLink(data.heroCtaLink)} />}>
-              {data.heroCtaLabel}
-            </Button>
-          )}
-        </FadeIn>
-      </div>
-    </section>
+        </div>
+
+        {/* Tez cümlesi, sola-alta hizalı */}
+        <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-end px-4 pb-14 pt-24 sm:px-8 lg:px-12 lg:pb-20">
+          <h1 className="display max-w-[16ch] text-[2.75rem] font-extrabold uppercase leading-[0.95] sm:text-6xl lg:text-[5.25rem]">
+            {title}
+          </h1>
+
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-white/80">
+            {subtitle}
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <button
+              type="button"
+              onClick={() => setIsQuoteOpen(true)}
+              className="cursor-pointer bg-white px-7 py-4 text-base font-semibold text-primary transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              {ctaLabel}
+            </button>
+
+            {phone && (
+              <a
+                href={`tel:${phone.replace(/\s/g, "")}`}
+                className="text-xl font-semibold tabular-nums underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              >
+                {phone}
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* Sayfanın kurgusu burada tanıtılıyor */}
+        <div className="relative z-10">
+          <StageAxis />
+        </div>
+      </section>
+
+      <QuickQuoteModal isOpen={isQuoteOpen} onClose={() => setIsQuoteOpen(false)} />
+    </>
   );
 }

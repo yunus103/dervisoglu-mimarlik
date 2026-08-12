@@ -48,10 +48,18 @@ function resolveHref(item: NavItem): string {
 }
 
 export function Footer({ settings, navigation }: { settings: SiteSettings; navigation: Navigation }) {
-  const rawFooterLinks = navigation?.footerLinks && navigation.footerLinks.length > 0
+  const baseFooterLinks = navigation?.footerLinks && navigation.footerLinks.length > 0
     ? navigation.footerLinks
     : defaultFooterLinks;
-  
+
+  // Dynamically filter footer links based on siteSettings
+  const rawFooterLinks = baseFooterLinks.filter((item) => {
+    const href = resolveHref(item);
+    if (href === "/projeler" && settings?.enableProjectsPage === false) return false;
+    if (href === "/blog" && settings?.enableBlogPage === false) return false;
+    return true;
+  });
+
   const socialLinks: SocialLink[] = (settings?.socialLinks || []).filter((s: SocialLink) => s.url);
   const contact = settings?.contactInfo;
   const currentYear = new Date().getFullYear();

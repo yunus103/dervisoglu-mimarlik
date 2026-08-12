@@ -38,6 +38,7 @@ export const homePageQuery = groq`*[_type == "homePage"][0] {
     title, slug,
     mainImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt }
   },
+  processTitle, processSubtitle, processSteps[] { stepNumber, title, description },
   projectsTitle, projectsSubtitle,
   featuredProjects[]-> {
     title, slug,
