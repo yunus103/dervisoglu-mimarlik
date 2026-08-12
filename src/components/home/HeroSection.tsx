@@ -4,7 +4,7 @@ import { useState } from "react";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { QuickQuoteModal } from "@/components/forms/QuickQuoteModal";
 import { StageAxis } from "./StageAxis";
-import { SanityImage as SanityImageType, CtaLink } from "@/types";
+import { SanityImage as SanityImageType, CtaLink, ProcessStep } from "@/types";
 
 interface HeroSectionProps {
   data?: {
@@ -15,6 +15,8 @@ interface HeroSectionProps {
     heroCtaLink?: CtaLink;
   };
   phone?: string;
+  /** Hero altındaki şeritte gösterilen aşamalar (Süreç bölümüyle aynı kaynak) */
+  stages?: ProcessStep[] | null;
 }
 
 export function resolveLink(linkData?: CtaLink) {
@@ -40,21 +42,19 @@ export function resolveLink(linkData?: CtaLink) {
   }
 }
 
-export function HeroSection({ data, phone }: HeroSectionProps) {
+export function HeroSection({ data, phone, stages }: HeroSectionProps) {
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
 
-  const title = data?.heroTitle || "Arsadan anahtara, tek çatı altında";
-  const subtitle =
-    data?.heroSubtitle ||
-    "Mimari proje, belediye ruhsatı, şantiye ve teslim süreçlerinin tamamı Dervişoğlu Mimarlık bünyesindeki ekipler tarafından yürütülür.";
-  const ctaLabel = data?.heroCtaLabel || "Ön fizibilite talep edin";
+  const title = data?.heroTitle;
+  const subtitle = data?.heroSubtitle;
+  const ctaLabel = data?.heroCtaLabel;
 
   return (
     <>
-      {/* Header 5rem yer kaplar; hero onu tamamlayarak tam ekran olur.
+      {/* Sabit header'ın altına uzanır (-mt-20) ve tam ekranı kaplar.
           svh birimi, mobil tarayıcı adres çubuğu açılıp kapanırken
           yüksekliğin zıplamasını engeller. */}
-      <section className="relative flex min-h-[calc(100svh-5rem)] flex-col bg-primary text-white">
+      <section className="relative -mt-20 flex min-h-[100svh] flex-col bg-primary text-white">
         {/* Arka plan fotoğrafı — çerçevesiz, tam kanama */}
         <div aria-hidden className="absolute inset-0 overflow-hidden">
           {data?.heroImage?.asset ? (
@@ -77,23 +77,29 @@ export function HeroSection({ data, phone }: HeroSectionProps) {
         </div>
 
         {/* Tez cümlesi, sola-alta hizalı */}
-        <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-end px-4 pb-14 pt-24 sm:px-8 lg:px-12 lg:pb-20">
-          <h1 className="display max-w-[16ch] text-[2.75rem] font-extrabold uppercase leading-[0.95] sm:text-6xl lg:text-[5.25rem]">
-            {title}
-          </h1>
+        <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-end px-4 pb-14 pt-32 sm:px-8 lg:px-12 lg:pb-20">
+          {title && (
+            <h1 className="display max-w-[16ch] text-[2.75rem] font-extrabold uppercase leading-[0.95] sm:text-6xl lg:text-[5.25rem]">
+              {title}
+            </h1>
+          )}
 
-          <p className="mt-7 max-w-xl text-lg leading-relaxed text-white/80">
-            {subtitle}
-          </p>
+          {subtitle && (
+            <p className="mt-7 max-w-xl text-lg leading-relaxed text-white/80">
+              {subtitle}
+            </p>
+          )}
 
           <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-            <button
-              type="button"
-              onClick={() => setIsQuoteOpen(true)}
-              className="cursor-pointer bg-white px-7 py-4 text-base font-semibold text-primary transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              {ctaLabel}
-            </button>
+            {ctaLabel && (
+              <button
+                type="button"
+                onClick={() => setIsQuoteOpen(true)}
+                className="cursor-pointer bg-white px-7 py-4 text-base font-semibold text-primary transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                {ctaLabel}
+              </button>
+            )}
 
             {phone && (
               <a
@@ -108,7 +114,7 @@ export function HeroSection({ data, phone }: HeroSectionProps) {
 
         {/* Sayfanın kurgusu burada tanıtılıyor */}
         <div className="relative z-10">
-          <StageAxis />
+          <StageAxis stages={stages} />
         </div>
       </section>
 

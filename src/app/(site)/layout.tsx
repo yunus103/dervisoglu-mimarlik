@@ -9,7 +9,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <>
       <Header settings={data?.settings} navigation={data?.navigation} />
-      <main>{children}</main>
+      {/* Header sabit (fixed) konumda ve 5rem yüksekliğinde; içerik onun altından başlar.
+          Ana sayfa hero'su bu boşluğu negatif margin ile geri alıp header'ın altına uzanır. */}
+      <main className="pt-20">{children}</main>
       <Footer settings={data?.settings} navigation={data?.navigation} />
       {data?.settings?.contactInfo?.whatsappNumber && (
         <WhatsAppButton number={data.settings.contactInfo.whatsappNumber} />

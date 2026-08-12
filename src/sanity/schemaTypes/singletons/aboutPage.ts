@@ -7,6 +7,7 @@ export const aboutPageType = defineType({
   groups: [
     { name: "hero", title: "Page Hero Bölümü" },
     { name: "content", title: "Sayfa İçeriği" },
+    { name: "team", title: "Ekibimiz Bölümü" },
     { name: "seo", title: "SEO Ayarları" },
   ],
   fields: [
@@ -34,6 +35,70 @@ export const aboutPageType = defineType({
       options: { hotspot: true },
       fields: [defineField({ name: "alt", title: "Alt Metni", type: "string", validation: (Rule) => Rule.required() })],
     }),
+    // Team Group
+    defineField({
+      name: "teamTitle",
+      title: "Ekip Bölümü Başlığı",
+      type: "string",
+      group: "team",
+      initialValue: "Ekibimiz",
+    }),
+    defineField({
+      name: "teamSubtitle",
+      title: "Ekip Bölümü Alt Başlığı",
+      type: "text",
+      rows: 2,
+      group: "team",
+      initialValue:
+        "Projelerin tasarım, resmi süreç ve saha aşamalarını yürüten kadromuz.",
+    }),
+    defineField({
+      name: "teamMembers",
+      title: "Ekip Üyeleri",
+      type: "array",
+      group: "team",
+      description:
+        "Üye eklenmezse bu bölüm sayfada hiç gösterilmez. Sürükleyip bırakarak sıralayabilirsiniz.",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "name",
+              title: "Ad Soyad",
+              type: "string",
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "role",
+              title: "Görev / Ünvan",
+              type: "string",
+              description: "Örn: Kurucu, Mimar, Şantiye Şefi",
+            }),
+            defineField({
+              name: "bio",
+              title: "Kısa Tanıtım",
+              type: "text",
+              rows: 3,
+              description: "İsteğe bağlı. Boş bırakılırsa yalnızca ad ve görev gösterilir.",
+            }),
+            defineField({
+              name: "photo",
+              title: "Fotoğraf",
+              type: "image",
+              options: { hotspot: true },
+              fields: [
+                defineField({ name: "alt", title: "Alt Metni", type: "string" }),
+              ],
+            }),
+          ],
+          preview: {
+            select: { title: "name", subtitle: "role", media: "photo" },
+          },
+        },
+      ],
+    }),
+
     // SEO Group
     defineField({ name: "seo", title: "SEO", type: "seo", group: "seo" }),
   ],

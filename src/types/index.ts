@@ -94,15 +94,26 @@ export interface Navigation {
   footerLinks?: NavItem[];
 }
 
+export type ServiceCategory = "mimari-tasarim" | "insaat-uygulama";
+
 export interface Service {
   _id?: string;
   _createdAt?: string;
   _updatedAt?: string;
   title: string;
   slug: SanitySlug;
+  summary?: string;
+  category?: ServiceCategory;
+  order?: number;
   mainImage?: SanityImage;
   body?: any[];
   seo?: SeoSettings;
+}
+
+/** Hizmet kategorisi başlıkları — Hizmetler Sayfası dokümanından yönetilir. */
+export interface ServiceCategoryLabels {
+  categoryOneLabel?: string;
+  categoryTwoLabel?: string;
 }
 
 export interface Project {
@@ -141,11 +152,21 @@ export interface BasePage {
   seo?: SeoSettings;
 }
 
+export interface TeamMember {
+  name: string;
+  role?: string;
+  bio?: string;
+  photo?: SanityImage;
+}
+
 export interface AboutPage extends BasePage {
   pageTitle: string;
   pageSubtitle?: string;
   body?: any[];
   mainImage?: SanityImage;
+  teamTitle?: string;
+  teamSubtitle?: string;
+  teamMembers?: TeamMember[];
 }
 
 export interface ContactPage extends BasePage {
@@ -153,6 +174,10 @@ export interface ContactPage extends BasePage {
   pageSubtitle?: string;
   formTitle?: string;
   successMessage?: string;
+  directTitle?: string;
+  workingHours?: string;
+  responseNote?: string;
+  mapTitle?: string;
 }
 
 export interface InnerPageWithCta extends BasePage {
@@ -163,13 +188,41 @@ export interface InnerPageWithCta extends BasePage {
 }
 
 export type BlogPage = InnerPageWithCta;
-export type ServicesPage = InnerPageWithCta;
 export type ProjectsPage = InnerPageWithCta;
+
+export interface ServicesPage extends InnerPageWithCta, ServiceCategoryLabels {
+  emptyText?: string;
+  regionsTitle?: string;
+  regionsText?: string;
+  ctaTitle?: string;
+  ctaText?: string;
+}
 
 export interface ProcessStep {
   stepNumber?: string;
+  /** Hero altındaki aşama şeridinde görünen kısa ad */
+  shortName?: string;
   title: string;
-  description: string;
+  description?: string;
+  team?: string;
+  deliverable?: string;
+  question?: string;
+  answer?: string;
+}
+
+export interface AboutTeam {
+  name: string;
+  scope?: string;
+}
+
+export interface AboutFact {
+  value: string;
+  label?: string;
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
 }
 
 export interface HomePage {
@@ -184,17 +237,32 @@ export interface HomePage {
   aboutImage?: SanityImage;
   aboutCtaLabel?: string;
   aboutCtaLink?: string;
+  aboutTeams?: AboutTeam[];
+  aboutFacts?: AboutFact[];
   servicesTitle?: string;
   servicesSubtitle?: string;
   featuredServices?: Service[];
+  /** Kategori başlıkları Hizmetler Sayfası dokümanından okunur (tek kaynak). */
+  serviceCategories?: ServiceCategoryLabels;
   processTitle?: string;
   processSubtitle?: string;
   processSteps?: ProcessStep[];
+  processTeamLabel?: string;
+  processDeliverableLabel?: string;
+  processFooterNote?: string;
   projectsTitle?: string;
   projectsSubtitle?: string;
   featuredProjects?: Project[];
   blogTitle?: string;
   blogSubtitle?: string;
   featuredPosts?: BlogPost[];
+  faqTitle?: string;
+  faqSubtitle?: string;
+  faqItems?: FaqItem[];
+  ctaTitle?: string;
+  ctaText?: string;
+  ctaButtonLabel?: string;
+  ctaScopeTitle?: string;
+  ctaScopeItems?: string[];
   seo?: SeoSettings;
 }

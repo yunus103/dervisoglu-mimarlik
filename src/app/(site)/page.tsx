@@ -15,6 +15,14 @@ import { ProjectsSection } from "@/components/home/ProjectsSection";
 import { BlogSection } from "@/components/home/BlogSection";
 import { FaqSection } from "@/components/home/FaqSection";
 import { HomeCtaSection } from "@/components/home/HomeCtaSection";
+import {
+  homeFallback,
+  homeFallbackAboutFacts,
+  homeFallbackAboutTeams,
+  homeFallbackCtaScopeItems,
+  homeFallbackFaqItems,
+  homeFallbackProcessSteps,
+} from "@/lib/home-fallback";
 import { HomePage as HomePageType, Service, Project, BlogPost } from "@/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -67,33 +75,61 @@ export default async function HomePage() {
 
   const phone = settings?.contactInfo?.phone;
 
+  // Sanity'deki Ana Sayfa dokümanında ilgili alan boşsa yedek içerik gösterilir.
+  // Yedek metinler homePage şemasındaki initialValue değerleriyle birebir aynıdır.
+  const pick = <T,>(value: T | null | undefined, fallback: T): T =>
+    value === null || value === undefined || value === "" ? fallback : value;
+
+  const pickList = <T,>(value: T[] | null | undefined, fallback: T[]): T[] =>
+    value && value.length > 0 ? value : fallback;
+
+  const processSteps = pickList(data?.processSteps, homeFallbackProcessSteps);
+
   return (
     <div className="flex flex-col w-full min-h-screen">
-      {/* 1. Hero — tez cümlesi ve ay ekseni */}
-      <HeroSection data={data} phone={phone} />
+      {/* 1. Hero — tez cümlesi ve aşama şeridi */}
+      <HeroSection
+        data={{
+          ...data,
+          heroTitle: pick(data?.heroTitle, homeFallback.heroTitle),
+          heroSubtitle: pick(data?.heroSubtitle, homeFallback.heroSubtitle),
+          heroCtaLabel: pick(data?.heroCtaLabel, homeFallback.heroCtaLabel),
+        }}
+        phone={phone}
+        stages={processSteps}
+      />
 
-      {/* 2. Takvim — sayfanın omurgası, süreç + aşama soruları */}
+      {/* 2. Süreç — sayfanın omurgası, aşamalar + aşama soruları */}
       <ProcessSection
-        title={data?.processTitle}
-        subtitle={data?.processSubtitle}
-        steps={data?.processSteps}
+        title={pick(data?.processTitle, homeFallback.processTitle)}
+        subtitle={pick(data?.processSubtitle, homeFallback.processSubtitle)}
+        steps={processSteps}
+        teamLabel={pick(data?.processTeamLabel, homeFallback.processTeamLabel)}
+        deliverableLabel={pick(
+          data?.processDeliverableLabel,
+          homeFallback.processDeliverableLabel
+        )}
+        footerNote={pick(data?.processFooterNote, homeFallback.processFooterNote)}
       />
 
-      {/* 3. Hizmetler — iki disiplinli defter, altısı da görünür */}
+      {/* 3. Hizmetler — kategoriye ayrılmış liste, tamamı Sanity'den */}
       <ServicesSection
-        title={data?.servicesTitle}
-        subtitle={data?.servicesSubtitle}
+        title={pick(data?.servicesTitle, homeFallback.servicesTitle)}
+        subtitle={pick(data?.servicesSubtitle, homeFallback.servicesSubtitle)}
         services={servicesToDisplay}
+        categoryLabels={data?.serviceCategories}
       />
 
-      {/* 4. Kanıt — kendi ekiplerimiz ve rakamlar */}
+      {/* 4. Kurumsal yapı — kendi ekiplerimiz ve rakamlar */}
       <AboutSection
-        title={data?.aboutTitle}
-        subtitle={data?.aboutSubtitle}
+        title={pick(data?.aboutTitle, homeFallback.aboutTitle)}
+        subtitle={pick(data?.aboutSubtitle, homeFallback.aboutSubtitle)}
         text={data?.aboutText}
         image={data?.aboutImage}
-        ctaLabel={data?.aboutCtaLabel}
-        ctaLink={data?.aboutCtaLink}
+        ctaLabel={pick(data?.aboutCtaLabel, homeFallback.aboutCtaLabel)}
+        ctaLink={pick(data?.aboutCtaLink, homeFallback.aboutCtaLink)}
+        teams={pickList(data?.aboutTeams, homeFallbackAboutTeams)}
+        facts={pickList(data?.aboutFacts, homeFallbackAboutFacts)}
       />
 
       {/* 5. Öne Çıkan Projeler (Eğer Sanity Studio'dan pasif edilmediyse) */}
@@ -114,11 +150,22 @@ export default async function HomePage() {
         />
       )}
 
-      {/* 7. Takvime girmeyen genel sorular */}
-      <FaqSection />
+      {/* 7. Aşamalara girmeyen genel sorular */}
+      <FaqSection
+        title={pick(data?.faqTitle, homeFallback.faqTitle)}
+        subtitle={pick(data?.faqSubtitle, homeFallback.faqSubtitle)}
+        items={pickList(data?.faqItems, homeFallbackFaqItems)}
+      />
 
       {/* 8. Kapanış — somut ön fizibilite teklifi */}
-      <HomeCtaSection phone={phone} />
+      <HomeCtaSection
+        title={pick(data?.ctaTitle, homeFallback.ctaTitle)}
+        text={pick(data?.ctaText, homeFallback.ctaText)}
+        buttonLabel={pick(data?.ctaButtonLabel, homeFallback.ctaButtonLabel)}
+        scopeTitle={pick(data?.ctaScopeTitle, homeFallback.ctaScopeTitle)}
+        scopeItems={pickList(data?.ctaScopeItems, homeFallbackCtaScopeItems)}
+        phone={phone}
+      />
     </div>
   );
 }

@@ -18,12 +18,43 @@ export const serviceType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "summary",
+      title: "Kısa Açıklama",
+      type: "text",
+      rows: 2,
+      description:
+        "Ana sayfada ve hizmetler listesinde başlığın hemen altında görünen tek cümlelik açıklama.",
+      initialValue: "Bu hizmete ait kısa açıklama metnini buraya yazın.",
+    }),
+    defineField({
+      name: "category",
+      title: "Hizmet Kategorisi",
+      type: "string",
+      description: "Hizmetin ana sayfada ve hizmetler sayfasında hangi başlık altında listeleneceğini belirler.",
+      options: {
+        list: [
+          { title: "Mimari & Tasarım Hizmetleri", value: "mimari-tasarim" },
+          { title: "İnşaat & Uygulama Hizmetleri", value: "insaat-uygulama" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "mimari-tasarim",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "order",
+      title: "Sıralama",
+      type: "number",
+      description: "Küçük sayı önce gösterilir. Aynı kategori içindeki sırayı belirler.",
+      initialValue: 0,
+    }),
+    defineField({
       name: "mainImage",
       title: "Ana Görsel",
       type: "image",
+      description: "Zorunlu değildir. Yüklenmezse listelerde yalnızca metin gösterilir.",
       options: { hotspot: true },
       fields: [defineField({ name: "alt", title: "Alt Metni", type: "string", validation: (Rule) => Rule.required() })],
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "body",

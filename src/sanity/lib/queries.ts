@@ -33,12 +33,17 @@ export const homePageQuery = groq`*[_type == "homePage"][0] {
   aboutTitle, aboutSubtitle, aboutText,
   aboutImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop },
   aboutCtaLabel, aboutCtaLink,
+  aboutTeams[] { name, scope },
+  aboutFacts[] { value, label },
   servicesTitle, servicesSubtitle,
   featuredServices[]-> {
-    title, slug,
+    title, slug, summary, category, order,
     mainImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt }
   },
-  processTitle, processSubtitle, processSteps[] { stepNumber, title, description },
+  "serviceCategories": *[_type == "servicesPage"][0] { categoryOneLabel, categoryTwoLabel },
+  processTitle, processSubtitle,
+  processSteps[] { stepNumber, shortName, title, description, team, deliverable, question, answer },
+  processTeamLabel, processDeliverableLabel, processFooterNote,
   projectsTitle, projectsSubtitle,
   featuredProjects[]-> {
     title, slug,
@@ -50,6 +55,8 @@ export const homePageQuery = groq`*[_type == "homePage"][0] {
     category->{ title, slug },
     mainImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt }
   },
+  faqTitle, faqSubtitle, faqItems[] { question, answer },
+  ctaTitle, ctaText, ctaButtonLabel, ctaScopeTitle, ctaScopeItems,
   seo
 }`;
 
@@ -58,13 +65,20 @@ export const aboutPageQuery = groq`*[_type == "aboutPage"][0] {
   heroImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop },
   pageTitle, pageSubtitle, body,
   mainImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop },
+  teamTitle, teamSubtitle,
+  teamMembers[] {
+    name, role, bio,
+    photo { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop }
+  },
   seo
 }`;
 
 export const contactPageQuery = groq`*[_type == "contactPage"][0] {
   heroTitle, heroSubtitle,
   heroImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop },
-  pageTitle, pageSubtitle, formTitle, successMessage, seo
+  pageTitle, pageSubtitle, formTitle, successMessage,
+  directTitle, workingHours, responseNote, mapTitle,
+  seo
 }`;
 
 export const blogPageQuery = groq`*[_type == "blogPage"][0] {
@@ -76,7 +90,11 @@ export const blogPageQuery = groq`*[_type == "blogPage"][0] {
 export const servicesPageQuery = groq`*[_type == "servicesPage"][0] {
   heroTitle, heroSubtitle,
   heroImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop },
-  pageTitle, pageSubtitle, ctaLabel, ctaLink, seo
+  pageTitle, pageSubtitle,
+  categoryOneLabel, categoryTwoLabel, emptyText,
+  regionsTitle, regionsText,
+  ctaTitle, ctaText, ctaLabel, ctaLink,
+  seo
 }`;
 
 export const projectsPageQuery = groq`*[_type == "projectsPage"][0] {
@@ -126,13 +144,13 @@ export const blogRelatedPostsQuery = groq`*[_type == "blogPost" && category._ref
 
 // ─── Hizmetler ─────────────────────────────────────────────────────────────────
 
-export const serviceListQuery = groq`*[_type == "service"] | order(_createdAt asc) {
-  title, slug,
+export const serviceListQuery = groq`*[_type == "service"] | order(order asc, _createdAt asc) {
+  title, slug, summary, category, order,
   mainImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop }
 }`;
 
-export const serviceFallbackQuery = groq`*[_type == "service"] | order(_createdAt asc)[0...3] {
-  title, slug,
+export const serviceFallbackQuery = groq`*[_type == "service"] | order(order asc, _createdAt asc)[0...6] {
+  title, slug, summary, category, order,
   mainImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop }
 }`;
 
