@@ -4,7 +4,7 @@ import { groq } from "next-sanity";
 // Her sayfada bir kez çekilir — header, footer, global ayarlar
 export const layoutQuery = groq`{
   "settings": *[_type == "siteSettings"][0] {
-    siteName, siteTagline, enableProjectsPage, enableBlogPage,
+    siteName, siteTagline, footerDescription, enableProjectsPage, enableBlogPage,
     logo { asset->{ _id, url, metadata { lqip, dimensions } }, hotspot, crop },
     logoHeight,
     favicon { asset->{ _id, url } },
@@ -155,13 +155,18 @@ export const serviceFallbackQuery = groq`*[_type == "service"] | order(order asc
 }`;
 
 export const serviceBySlugQuery = groq`*[_type == "service" && slug.current == $slug][0] {
-  title, slug,
+  title, slug, summary, category,
   mainImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop },
   body[] {
     ...,
     _type == "image" => { asset->{ _id, url, metadata { lqip, dimensions } }, alt, alignment, size, hotspot, crop }
   },
   seo
+}`;
+
+/** Hizmet detay sayfasında yan sütunda listelenen diğer hizmetler */
+export const otherServicesQuery = groq`*[_type == "service" && slug.current != $slug] | order(order asc, _createdAt asc)[0...5] {
+  title, slug, summary, category
 }`;
 
 // ─── Projeler ──────────────────────────────────────────────────────────────────

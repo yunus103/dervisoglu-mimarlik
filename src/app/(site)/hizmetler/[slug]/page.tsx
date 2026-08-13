@@ -1,15 +1,20 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cachedFetch } from "@/sanity/lib/client";
-import { serviceBySlugQuery, serviceSlugsQuery } from "@/sanity/lib/queries";
+import {
+  serviceBySlugQuery,
+  serviceSlugsQuery,
+  otherServicesQuery,
+  servicesPageQuery,
+} from "@/sanity/lib/queries";
 import { buildMetadata, portableTextToPlainText } from "@/lib/seo";
 import { RichText } from "@/components/ui/RichText";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { Button } from "@/components/ui/button";
+import { PageHero } from "@/components/layout/PageHero";
 import Link from "next/link";
 
-import { Service } from "@/types";
+import { Service, ServicesPage } from "@/types";
 import { JsonLd, serviceJsonLd } from "@/components/seo/JsonLd";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -25,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!service) return {};
   return buildMetadata({
     title: service.title,
-    description: portableTextToPlainText(service.body),
+    description: service.summary || portableTextToPlainText(service.body),
     canonicalPath: `/hizmetler/${slug}`,
     pageSeo: service.seo,
   });
@@ -33,43 +38,104 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ServicePage({ params }: Props) {
   const { slug } = await params;
-  const service = await cachedFetch<Service | null>(
-    serviceBySlugQuery,
-    { slug },
-    { next: { tags: [`service:detail:${slug}`] } }
-  );
+
+  const [service, otherServices, servicesPage] = await Promise.all([
+    cachedFetch<Service | null>(serviceBySlugQuery, { slug }, { next: { tags: [`service:detail:${slug}`] } }),
+    cachedFetch<Service[]>(otherServicesQuery, { slug }, { next: { tags: ["service:list"] } }),
+    cachedFetch<ServicesPage | null>(servicesPageQuery, {}, { next: { tags: ["servicesPage"] } }),
+  ]);
 
   if (!service) notFound();
+
+  const categoryLabel =
+    service.category === "insaat-uygulama"
+      ? servicesPage?.categoryTwoLabel || "İnşaat & Uygulama Hizmetleri"
+      : servicesPage?.categoryOneLabel || "Mimari & Tasarım Hizmetleri";
+
+  const others = otherServices ?? [];
 
   return (
     <>
       <JsonLd data={serviceJsonLd(service)} />
-      <article className="container mx-auto px-4 py-16 max-w-3xl break-words overflow-x-hidden">
-      <FadeIn direction="up">
-        <Button variant="ghost" className="mb-8 -ml-2" render={<Link href="/hizmetler" />}>
-          ← Hizmetlere Dön
-        </Button>
-        <h1 className="text-4xl font-bold mb-8">{service.title}</h1>
-      </FadeIn>
 
-      {service.mainImage && (
-        <FadeIn delay={0.15}>
-          <div className="relative h-64 md:h-96 rounded-xl overflow-hidden mb-12">
-            <SanityImage
-              image={service.mainImage}
-              fill
-              sizes="(max-width: 768px) 100vw, 800px"
-              className="object-cover"
-              priority
-            />
-          </div>
-        </FadeIn>
+      <PageHero title={service.title} subtitle={service.summary} />
+
+      {/* Görsel — çerçevesiz, tam genişlik */}
+      {service.mainImage?.asset && (
+        <div className="relative h-64 w-full bg-muted md:h-[440px]">
+          <SanityImage
+            image={service.mainImage}
+            fill
+            sizes="100vw"
+            quality={90}
+            className="object-cover"
+            priority
+          />
+        </div>
       )}
 
-      <FadeIn delay={0.25}>
-        <RichText value={service.body} />
-      </FadeIn>
-    </article>
+      <section className="border-b border-border bg-background py-16 md:py-24">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
+          <div className="grid grid-cols-1 gap-x-16 gap-y-14 lg:grid-cols-12">
+            {/* İçerik */}
+            <div className="lg:col-span-8">
+              <FadeIn direction="up">
+                <p className="data text-muted-foreground">{categoryLabel}</p>
+              </FadeIn>
+
+              {service.body && service.body.length > 0 && (
+                <FadeIn delay={0.1}>
+                  <RichText value={service.body} className="mt-8 max-w-prose leading-relaxed" />
+                </FadeIn>
+              )}
+            </div>
+
+            {/* Yan sütun */}
+            <aside className="lg:col-span-4">
+              <div className="lg:sticky lg:top-28">
+                {others.length > 0 && (
+                  <FadeIn direction="up" delay={0.15}>
+                    <div>
+                      <h2 className="display border-b-2 border-primary pb-3 text-sm font-bold uppercase tracking-wide text-primary">
+                        Diğer hizmetler
+                      </h2>
+                      <ul>
+                        {others.map((other) => (
+                          <li key={other.slug?.current}>
+                            <Link
+                              href={`/hizmetler/${other.slug?.current ?? ""}`}
+                              className="group flex items-baseline gap-4 border-b border-border py-4 transition-colors hover:bg-primary focus-visible:bg-primary focus-visible:outline-none"
+                            >
+                              <span className="flex-1 px-1 text-base font-medium text-foreground transition-colors group-hover:text-white group-focus-visible:text-white">
+                                {other.title}
+                              </span>
+                              <span
+                                aria-hidden
+                                className="shrink-0 pr-1 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-white group-focus-visible:text-white"
+                              >
+                                →
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </FadeIn>
+                )}
+
+                <FadeIn direction="up" delay={0.2}>
+                  <Link
+                    href="/iletisim"
+                    className="mt-10 block bg-primary px-6 py-4 text-center text-base font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    Bu hizmet için iletişime geçin
+                  </Link>
+                </FadeIn>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

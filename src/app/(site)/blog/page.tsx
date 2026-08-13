@@ -29,17 +29,18 @@ export default async function BlogListPage() {
   ]);
 
   return (
-    <div className="flex flex-col gap-12 md:gap-16 pb-16">
-      {/* Page Hero */}
+    <>
       <PageHero
         title={pageData?.heroTitle || pageData?.pageTitle || "Blog"}
-        subtitle={pageData?.heroSubtitle || pageData?.pageSubtitle || "Yazılar, güncellemeler ve haberler."}
+        subtitle={pageData?.heroSubtitle || pageData?.pageSubtitle}
         backgroundImage={pageData?.heroImage}
       />
 
-      <div className="container mx-auto px-4">
-        <BlogFilter posts={posts} categories={categories} />
-      </div>
-    </div>
+      <section className="border-b border-border bg-background py-20 md:py-28">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
+          <BlogFilter posts={posts} categories={categories} />
+        </div>
+      </section>
+    </>
   );
 }

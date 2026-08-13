@@ -6,10 +6,10 @@ import { buildMetadata, getLayoutData } from "@/lib/seo";
 import { RichText } from "@/components/ui/RichText";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { PageHero } from "@/components/layout/PageHero";
 import { JsonLd, articleJsonLd } from "@/components/seo/JsonLd";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { blogRelatedPostsQuery } from "@/sanity/lib/queries";
 
 import { BlogPost } from "@/types";
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     { next: { tags: [`blog:detail:${slug}`, "blog:categories"] } }
   );
   if (!post) return {};
-  
+
   const baseSeo = await buildMetadata({
     title: post.title,
     description: post.excerpt,
@@ -70,109 +70,118 @@ export default async function BlogPostPage({ params }: Props) {
     );
   }
 
+  const related = relatedPosts ?? [];
+
   return (
     <>
       <JsonLd data={articleJsonLd(post, layoutData?.settings)} />
 
-      <article className="container mx-auto px-4 py-16 max-w-3xl break-words overflow-x-hidden">
-        <FadeIn direction="up">
-          <Button variant="ghost" className="mb-8 -ml-2" render={<Link href="/blog" />}>
-            {"← Blog'a Dön"}
-          </Button>
+      <PageHero title={post.title} subtitle={post.excerpt} />
 
-          <div className="flex items-center gap-3 mb-4">
-            {post.category && (
+      {post.mainImage?.asset && (
+        <div className="relative h-64 w-full bg-muted md:h-[480px]">
+          <SanityImage
+            image={post.mainImage}
+            fill
+            sizes="100vw"
+            quality={90}
+            className="object-cover"
+            priority
+          />
+        </div>
+      )}
+
+      <article className="border-b border-border bg-background py-16 md:py-24">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
+          <div className="max-w-prose">
+            <FadeIn direction="up">
+              <div className="data flex flex-wrap items-center gap-x-3 text-muted-foreground">
+                {post.category && (
+                  <Link
+                    href={
+                      post.category.slug?.current
+                        ? `/blog?category=${post.category.slug.current}`
+                        : "/blog"
+                    }
+                    className="transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    {post.category.title}
+                  </Link>
+                )}
+                {post.category && post.publishedAt && <span aria-hidden>·</span>}
+                {post.publishedAt && <time>{formatDate(post.publishedAt)}</time>}
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={0.1}>
+              <RichText value={post.body} className="mt-8 leading-relaxed" />
+            </FadeIn>
+
+            {post.seoTags && post.seoTags.length > 0 && (
+              <FadeIn delay={0.15}>
+                <div className="mt-14 border-t border-border pt-6">
+                  <p className="data text-muted-foreground">Etiketler</p>
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+                    {post.seoTags.map((tag: string) => (
+                      <span key={tag} className="text-sm text-foreground">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </FadeIn>
+            )}
+
+            <FadeIn delay={0.2}>
               <Link
-                href={post.category.slug?.current ? `/blog?category=${post.category.slug.current}` : "/blog"}
-                className="text-xs font-medium px-3 py-1 bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+                href="/blog"
+                className="mt-12 inline-block border-b-2 border-primary pb-1 text-base font-semibold text-primary transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
-                {post.category.title}
+                Tüm yazılar
               </Link>
-            )}
-            {post.publishedAt && (
-              <time className="text-sm text-muted-foreground block">
-                {formatDate(post.publishedAt)}
-              </time>
-            )}
+            </FadeIn>
           </div>
 
-          <h1 className="text-4xl font-bold mb-6 pt-2">{post.title}</h1>
-        </FadeIn>
+          {related.length > 0 && (
+            <FadeIn delay={0.25}>
+              <div className="mt-20 border-t border-border pt-12">
+                <h2 className="display text-2xl font-extrabold text-primary">İlgili Yazılar</h2>
 
-        {post.mainImage && (
-          <FadeIn delay={0.15}>
-            <div className="relative h-64 md:h-96 rounded-xl overflow-hidden mb-12">
-              <SanityImage
-                image={post.mainImage}
-                fill
-                sizes="(max-width: 768px) 100vw, 800px"
-                className="object-cover"
-                priority
-              />
-            </div>
-          </FadeIn>
-        )}
-
-        <FadeIn delay={0.25}>
-          <RichText value={post.body} />
-        </FadeIn>
-
-        {post.seoTags && post.seoTags.length > 0 && (
-          <FadeIn delay={0.3}>
-            <div className="mt-16 pt-8 border-t">
-              <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Etiketler:</h3>
-              <div className="flex flex-wrap gap-2">
-                {post.seoTags.map((tag: string) => (
-                  <span key={tag} className="text-sm bg-secondary px-3 py-1 rounded-md text-secondary-foreground">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </FadeIn>
-        )}
-
-        {relatedPosts?.length > 0 && (
-          <FadeIn delay={0.4}>
-            <div className="mt-20 pt-10 border-t border-border">
-              <h2 className="text-2xl font-bold mb-8 font-bankgothic">İlgili Yazılar</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {relatedPosts.map((rPost: BlogPost) => (
-                  <Link key={rPost.slug?.current} href={`/blog/${rPost.slug?.current}`} className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl">
-                    <article className="overflow-hidden h-full flex flex-col">
-                      {rPost.mainImage && (
-                        <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-muted">
-                          <SanityImage
-                            image={rPost.mainImage}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
-                          />
-                        </div>
-                      )}
-                      <div className="flex-grow flex flex-col">
-                        {rPost.publishedAt && (
-                          <time className="text-xs text-muted-foreground mb-2 tracking-widest uppercase">
-                            {formatDate(rPost.publishedAt)}
-                          </time>
+                <ul className="mt-10 grid grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+                  {related.map((rPost: BlogPost) => (
+                    <li key={rPost.slug?.current}>
+                      <Link
+                        href={`/blog/${rPost.slug?.current}`}
+                        className="group flex flex-col focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                      >
+                        {rPost.mainImage?.asset && (
+                          <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
+                            <SanityImage
+                              image={rPost.mainImage}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                            />
+                          </div>
                         )}
-                        <h3 className="text-lg font-bold mb-2 font-bankgothic group-hover:text-primary transition-colors line-clamp-2">
-                          {rPost.title}
-                        </h3>
-                        <div className="mt-auto pt-2">
-                          <span className="text-primary font-semibold text-xs tracking-wider uppercase group-hover:underline underline-offset-4 flex items-center">
-                            Devamını Oku
-                            <span className="ml-1 group-hover:translate-x-1 transition-transform">→</span>
-                          </span>
+                        <div className="border-t border-border pt-4">
+                          {rPost.publishedAt && (
+                            <time className="data text-muted-foreground">
+                              {formatDate(rPost.publishedAt)}
+                            </time>
+                          )}
+                          <h3 className="display mt-2 text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
+                            {rPost.title}
+                          </h3>
                         </div>
-                      </div>
-                    </article>
-                  </Link>
-                ))}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
-          </FadeIn>
-        )}
+            </FadeIn>
+          )}
+        </div>
       </article>
     </>
   );

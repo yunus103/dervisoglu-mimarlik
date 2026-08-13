@@ -6,7 +6,7 @@ import { buildMetadata, portableTextToPlainText } from "@/lib/seo";
 import { RichText } from "@/components/ui/RichText";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { Button } from "@/components/ui/button";
+import { PageHero } from "@/components/layout/PageHero";
 import Link from "next/link";
 
 import { Project } from "@/types";
@@ -44,32 +44,40 @@ export default async function ProjectPage({ params }: Props) {
   return (
     <>
       <JsonLd data={projectJsonLd(project)} />
-      <article className="container mx-auto px-4 py-16 max-w-3xl break-words overflow-x-hidden">
-      <FadeIn direction="up">
-        <Button variant="ghost" className="mb-8 -ml-2" render={<Link href="/projeler" />}>
-          ← Projelere Dön
-        </Button>
-        <h1 className="text-4xl font-bold mb-8">{project.title}</h1>
-      </FadeIn>
 
-      {project.mainImage && (
-        <FadeIn delay={0.15}>
-          <div className="relative h-64 md:h-96 rounded-xl overflow-hidden mb-12">
-            <SanityImage
-              image={project.mainImage}
-              fill
-              sizes="(max-width: 768px) 100vw, 800px"
-              className="object-cover"
-              priority
-            />
-          </div>
-        </FadeIn>
+      <PageHero title={project.title} />
+
+      {project.mainImage?.asset && (
+        <div className="relative h-64 w-full bg-muted md:h-[480px]">
+          <SanityImage
+            image={project.mainImage}
+            fill
+            sizes="100vw"
+            quality={90}
+            className="object-cover"
+            priority
+          />
+        </div>
       )}
 
-      <FadeIn delay={0.25}>
-        <RichText value={project.body} />
-      </FadeIn>
-    </article>
+      <section className="border-b border-border bg-background py-16 md:py-24">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
+          {project.body && project.body.length > 0 && (
+            <FadeIn direction="up">
+              <RichText value={project.body} className="max-w-prose leading-relaxed" />
+            </FadeIn>
+          )}
+
+          <FadeIn delay={0.15}>
+            <Link
+              href="/projeler"
+              className="mt-14 inline-block border-b-2 border-primary pb-1 text-base font-semibold text-primary transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            >
+              Tüm projeler
+            </Link>
+          </FadeIn>
+        </div>
+      </section>
     </>
   );
 }

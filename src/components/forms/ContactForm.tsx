@@ -2,17 +2,18 @@
 
 import { useState } from "react";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { RiCheckboxCircleLine } from "react-icons/ri";
 
 const schema = z.object({
   name: z.string().min(2, "İsim en az 2 karakter olmalı"),
   email: z.string().email("Geçerli bir e-posta girin"),
-  phone: z.string().optional(),
-  subject: z.string().optional(),
+  phone: z.string().min(10, "Geçerli bir telefon numarası girin"),
+  projectType: z.string().optional(),
+  location: z.string().optional(),
+  landSize: z.string().optional(),
   message: z.string().min(10, "Mesaj en az 10 karakter olmalı"),
 });
 
@@ -25,6 +26,16 @@ type ContactFormProps = {
   successMessage?: string;
 };
 
+/** Bu iş kolunda ilk soru "elinizde ne var" olduğu için proje tipi en üstte sorulur. */
+const projectTypes = [
+  "Arsa — yeni yapı düşünüyorum",
+  "Mevcut bina — kentsel dönüşüm",
+  "Mevcut bina — tadilat ve yenileme",
+  "İç mimari / dekorasyon",
+  "Yalnızca proje ve ruhsat işlemleri",
+  "Diğer / emin değilim",
+];
+
 export function ContactForm({
   formTitle = "Bize Ulaşın",
   successMessage = "Mesajınız alındı. En kısa sürede size dönüş yapacağız.",
@@ -35,12 +46,14 @@ export function ContactForm({
     name: "",
     email: "",
     phone: "",
-    subject: "",
+    projectType: projectTypes[0],
+    location: "",
+    landSize: "",
     message: "",
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -71,7 +84,11 @@ export function ContactForm({
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, honeypot }),
+        body: JSON.stringify({
+          ...formData,
+          subject: formData.projectType,
+          honeypot,
+        }),
       });
 
       if (res.ok) {
@@ -90,38 +107,101 @@ export function ContactForm({
 
   if (status === "success") {
     return (
-      <div className="rounded-md border border-border bg-card p-8 text-center space-y-3">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
-          <RiCheckboxCircleLine size={32} />
-        </div>
-        <p className="text-lg font-semibold text-foreground">{successMessage}</p>
+      <div className="border-t-2 border-primary bg-card px-6 py-10">
+        <p className="display text-xl font-bold text-primary">Talebiniz alındı</p>
+        <p className="mt-3 max-w-md text-base leading-relaxed text-muted-foreground">
+          {successMessage}
+        </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-      {formTitle && <h2 className="text-2xl font-bold">{formTitle}</h2>}
+    <form onSubmit={handleSubmit} noValidate>
+      {formTitle && (
+        <h2 className="display border-b-2 border-primary pb-3 text-lg font-bold text-primary">
+          {formTitle}
+        </h2>
+      )}
 
       {/* Honeypot — spam botları için gizli alan */}
-      <div className="absolute opacity-0 pointer-events-none h-0 overflow-hidden" aria-hidden="true">
+      <div className="absolute h-0 overflow-hidden opacity-0 pointer-events-none" aria-hidden="true">
         <input name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="mt-8 space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="name">Ad Soyad *</Label>
-          <Input
-            id="name"
-            name="name"
-            value={formData.name}
+          <Label htmlFor="projectType">Ne için başvuruyorsunuz?</Label>
+          <Select
+            id="projectType"
+            name="projectType"
+            value={formData.projectType}
             onChange={handleChange}
-            placeholder="Adınız Soyadınız"
-            aria-invalid={!!fieldErrors.name}
-          />
-          {fieldErrors.name && (
-            <p className="text-sm text-destructive">{fieldErrors.name[0]}</p>
-          )}
+          >
+            {projectTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </Select>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="location">Konum (ilçe / mahalle)</Label>
+            <Input
+              id="location"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="Örn: Arnavutköy, Hadımköy"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="landSize">Yaklaşık alan (m²)</Label>
+            <Input
+              id="landSize"
+              name="landSize"
+              inputMode="numeric"
+              value={formData.landSize}
+              onChange={handleChange}
+              placeholder="Biliyorsanız yazın"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="name">Ad Soyad *</Label>
+            <Input
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Adınız Soyadınız"
+              aria-invalid={!!fieldErrors.name}
+            />
+            {fieldErrors.name && (
+              <p className="text-sm text-destructive">{fieldErrors.name[0]}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Telefon *</Label>
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="05XX XXX XX XX"
+              aria-invalid={!!fieldErrors.phone}
+            />
+            {fieldErrors.phone && (
+              <p className="text-sm text-destructive">{fieldErrors.phone[0]}</p>
+            )}
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -139,58 +219,37 @@ export function ContactForm({
             <p className="text-sm text-destructive">{fieldErrors.email[0]}</p>
           )}
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="phone">Telefon</Label>
-          <Input
-            id="phone"
-            name="phone"
-            type="tel"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="+90 555 000 00 00"
-          />
-        </div>
 
         <div className="space-y-2">
-          <Label htmlFor="subject">Konu</Label>
-          <Input
-            id="subject"
-            name="subject"
-            value={formData.subject}
+          <Label htmlFor="message">Projeniz hakkında *</Label>
+          <Textarea
+            id="message"
+            name="message"
+            value={formData.message}
             onChange={handleChange}
-            placeholder="Mesajınızın konusu"
+            placeholder="Arsanın veya binanın durumu, beklentileriniz ve varsa ada/parsel bilgisi..."
+            rows={6}
+            aria-invalid={!!fieldErrors.message}
           />
+          {fieldErrors.message && (
+            <p className="text-sm text-destructive">{fieldErrors.message[0]}</p>
+          )}
         </div>
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="message">Mesaj *</Label>
-        <Textarea
-          id="message"
-          name="message"
-          value={formData.message}
-          onChange={handleChange}
-          placeholder="Mesajınızı buraya yazın..."
-          rows={6}
-          aria-invalid={!!fieldErrors.message}
-        />
-        {fieldErrors.message && (
-          <p className="text-sm text-destructive">{fieldErrors.message[0]}</p>
+        {status === "error" && (
+          <p className="border-l-2 border-destructive pl-4 text-sm text-destructive">
+            Bir hata oluştu. Lütfen tekrar deneyin.
+          </p>
         )}
+
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="w-full cursor-pointer bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        >
+          {status === "loading" ? "Gönderiliyor..." : "Gönder"}
+        </button>
       </div>
-
-      {status === "error" && (
-        <p className="text-sm text-destructive">
-          Bir hata oluştu. Lütfen tekrar deneyin.
-        </p>
-      )}
-
-      <Button type="submit" disabled={status === "loading"} className="w-full sm:w-auto">
-        {status === "loading" ? "Gönderiliyor..." : "Gönder"}
-      </Button>
     </form>
   );
 }

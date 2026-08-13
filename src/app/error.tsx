@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { RiAlertLine, RiRefreshLine } from "react-icons/ri";
 
 export default function Error({
   error,
@@ -18,30 +16,42 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">
-      <div className="rounded-full bg-destructive/10 p-6 text-destructive">
-        <RiAlertLine size={64} />
-      </div>
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">Bir şeyler yanlış gitti</h1>
-        <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed">
-          Beklenmedik bir hata oluştu. Sayfayı yenilemeyi deneyebilir veya ana sayfaya dönebilirsiniz.
+    <main className="flex min-h-screen flex-col justify-center bg-background">
+      <div className="mx-auto w-full max-w-[1400px] px-4 py-24 sm:px-8 lg:px-12">
+        <p className="data text-muted-foreground">Beklenmeyen hata</p>
+
+        <h1 className="display mt-6 max-w-[18ch] text-4xl font-extrabold leading-[1.02] text-primary sm:text-5xl">
+          Sayfa yüklenirken bir sorun oluştu
+        </h1>
+
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+          Sayfayı yeniden yüklemeyi deneyin. Sorun sürerse doğrudan bizimle iletişime
+          geçebilirsiniz.
         </p>
+
+        <div className="mt-12 flex flex-wrap items-center gap-4">
+          <button
+            type="button"
+            onClick={() => reset()}
+            className="cursor-pointer bg-primary px-7 py-4 text-base font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            Tekrar dene
+          </button>
+
+          <Link
+            href="/"
+            className="border border-border px-7 py-4 text-base font-semibold text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            Ana sayfa
+          </Link>
+        </div>
+
+        {process.env.NODE_ENV === "development" && (
+          <pre className="mt-14 max-w-full overflow-auto border border-border bg-muted p-4 text-left text-xs">
+            {error.message}
+          </pre>
+        )}
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-4">
-        <Button onClick={() => reset()} className="gap-2">
-          <RiRefreshLine className="h-4 w-4" />
-          Tekrar Dene
-        </Button>
-        <Button variant="outline" render={<Link href="/" />}>
-          Ana Sayfaya Dön
-        </Button>
-      </div>
-      {process.env.NODE_ENV === "development" && (
-        <pre className="mt-8 rounded-lg bg-muted p-4 text-left text-xs overflow-auto max-w-full">
-          {error.message}
-        </pre>
-      )}
-    </div>
+    </main>
   );
 }

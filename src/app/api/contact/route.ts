@@ -52,6 +52,10 @@ const schema = z.object({
   phone: z.string().optional(),
   subject: z.string().optional(),
   message: z.string().min(10, "Mesaj en az 10 karakter olmalı"),
+  // Projeye özel alanlar — formda doldurulmazsa boş gelir
+  projectType: z.string().max(120).optional(),
+  location: z.string().max(160).optional(),
+  landSize: z.string().max(60).optional(),
   honeypot: z.string().max(0), // Bot tuzağı — dolu gelirse spam
 });
 
@@ -98,13 +102,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: result.error.flatten().fieldErrors }, { status: 400 });
   }
 
-  const { name, email, phone, subject, message } = result.data;
+  const { name, email, phone, subject, message, projectType, location, landSize } = result.data;
 
   // 5. XSS koruması — mail şablonuna giren tüm değerleri escape et
   const safeName = escapeHtml(name);
   const safeEmail = escapeHtml(email);
   const safePhone = phone ? escapeHtml(phone) : null;
   const safeSubject = subject ? escapeHtml(subject) : null;
+  const safeProjectType = projectType ? escapeHtml(projectType) : null;
+  const safeLocation = location ? escapeHtml(location) : null;
+  const safeLandSize = landSize ? escapeHtml(landSize) : null;
   const safeMessage = escapeHtml(message).replace(/\n/g, "<br/>");
 
   // 6. Mail gönderimi
@@ -127,6 +134,9 @@ export async function POST(request: NextRequest) {
         <p><strong>E-posta:</strong> ${safeEmail}</p>
         ${safePhone ? `<p><strong>Telefon:</strong> ${safePhone}</p>` : ""}
         ${safeSubject ? `<p><strong>Konu:</strong> ${safeSubject}</p>` : ""}
+        ${safeProjectType ? `<p><strong>Proje Tipi:</strong> ${safeProjectType}</p>` : ""}
+        ${safeLocation ? `<p><strong>Konum:</strong> ${safeLocation}</p>` : ""}
+        ${safeLandSize ? `<p><strong>Yaklaşık Alan:</strong> ${safeLandSize}</p>` : ""}
         <p><strong>Mesaj:</strong></p>
         <p>${safeMessage}</p>
       `,

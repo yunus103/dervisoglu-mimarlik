@@ -1,29 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  RiCloseLine,
-  RiCheckLine,
-  RiSendPlaneLine,
-  RiUser3Line,
-  RiMailLine,
-  RiPhoneLine,
-  RiBuilding4Line,
-  RiChat1Line,
-} from "react-icons/ri";
-import { Button } from "@/components/ui/button";
+import { RiCloseLine } from "react-icons/ri";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 const quoteSchema = z.object({
   name: z.string().min(2, "Lütfen adınızı soyadınızı girin"),
   email: z.string().email("Geçerli bir e-posta adresi girin"),
   phone: z.string().min(10, "Geçerli bir telefon numarası girin"),
-  projectType: z.string().min(1, "Lütfen bir hizmet türü seçin"),
-  message: z.string().min(10, "Lütfen proje hakkında kısa bir bilgi yazın (en az 10 karakter)"),
+  projectType: z.string().min(1, "Lütfen bir seçim yapın"),
+  location: z.string().optional(),
+  message: z.string().min(10, "Lütfen projeniz hakkında kısa bir bilgi yazın"),
 });
 
 type QuoteFormData = z.infer<typeof quoteSchema>;
@@ -34,16 +26,43 @@ interface QuickQuoteModalProps {
   onClose: () => void;
 }
 
+const projectTypes = [
+  "Arsa — yeni yapı düşünüyorum",
+  "Mevcut bina — kentsel dönüşüm",
+  "Mevcut bina — tadilat ve yenileme",
+  "İç mimari / dekorasyon",
+  "Yalnızca proje ve ruhsat işlemleri",
+  "Diğer / emin değilim",
+];
+
+const emptyForm: QuoteFormData = {
+  name: "",
+  email: "",
+  phone: "",
+  projectType: projectTypes[0],
+  location: "",
+  message: "",
+};
+
 export function QuickQuoteModal({ isOpen, onClose }: QuickQuoteModalProps) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [formData, setFormData] = useState<QuoteFormData>({
-    name: "",
-    email: "",
-    phone: "",
-    projectType: "Mimari Proje Tasarımı",
-    message: "",
-  });
+  const [formData, setFormData] = useState<QuoteFormData>(emptyForm);
+
+  // Modal açıkken arka planın kaymasını engelle, Esc ile kapat
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -60,7 +79,6 @@ export function QuickQuoteModal({ isOpen, onClose }: QuickQuoteModalProps) {
     setStatus("loading");
     setFieldErrors({});
 
-    // Client-side validation
     const validation = quoteSchema.safeParse(formData);
     if (!validation.success) {
       setFieldErrors(validation.error.flatten().fieldErrors as FieldErrors);
@@ -68,7 +86,6 @@ export function QuickQuoteModal({ isOpen, onClose }: QuickQuoteModalProps) {
       return;
     }
 
-    // Honeypot check
     const form = e.currentTarget;
     const honeypot = (form.elements.namedItem("website") as HTMLInputElement)?.value || "";
 
@@ -80,8 +97,10 @@ export function QuickQuoteModal({ isOpen, onClose }: QuickQuoteModalProps) {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          subject: `Hızlı Teklif Talebi: ${formData.projectType}`,
-          message: `Hizmet Türü: ${formData.projectType}\n\nProje Detayları:\n${formData.message}`,
+          projectType: formData.projectType,
+          location: formData.location,
+          subject: `Ön fizibilite talebi: ${formData.projectType}`,
+          message: formData.message,
           honeypot,
         }),
       });
@@ -103,210 +122,189 @@ export function QuickQuoteModal({ isOpen, onClose }: QuickQuoteModalProps) {
   const handleReset = () => {
     setStatus("idle");
     setFieldErrors({});
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      projectType: "Mimari Proje Tasarımı",
-      message: "",
-    });
+    setFormData(emptyForm);
     onClose();
   };
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          {/* Backdrop */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Ön fizibilite talebi"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center sm:p-6"
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm"
+            className="fixed inset-0 bg-slate-950/70"
           />
 
-          {/* Modal Card */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="relative w-full max-w-xl rounded-lg border border-border/80 bg-card p-6 md:p-8 shadow-2xl z-10 my-auto overflow-hidden text-foreground"
+            className="relative z-10 my-auto w-full max-w-2xl border border-border bg-card text-foreground"
           >
-            {/* Header Accent Bar */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-secondary to-primary" />
-
-            {/* Close Icon */}
             <button
               onClick={onClose}
-              className="absolute right-4 top-4 rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+              className="absolute right-4 top-4 cursor-pointer p-2 text-muted-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               aria-label="Kapat"
             >
               <RiCloseLine size={22} />
             </button>
 
             {status === "success" ? (
-              <div className="py-10 text-center space-y-4">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
-                  <RiCheckLine size={32} />
-                </div>
-                <h3 className="text-2xl font-bold font-heading text-foreground">Talebiniz Gönderildi!</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                  Teşekkür ederiz. Proje talebiniz ekibimize iletilmiştir. E-posta ve telefon üzerinden en kısa sürede size dönüş yapacağız.
+              <div className="px-6 py-14 sm:px-10">
+                <h2 className="display text-2xl font-extrabold text-primary">Talebiniz alındı</h2>
+                <p className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
+                  Talebiniz ekibimize iletildi. Mesai saatleri içinde telefon veya e-posta
+                  üzerinden size dönüş yapılacaktır.
                 </p>
-                <div className="pt-4">
-                  <Button onClick={handleReset} variant="outline" className="px-6 rounded-md font-medium">
-                    Kapat
-                  </Button>
-                </div>
+                <button
+                  onClick={handleReset}
+                  className="mt-8 cursor-pointer border border-border px-7 py-3.5 text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-primary hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  Kapat
+                </button>
               </div>
             ) : (
-              <div>
-                {/* Title Section */}
-                <div className="mb-6 space-y-1 pr-6">
-                  <h3 className="text-2xl font-bold font-heading text-primary tracking-tight">
-                    Hızlı Teklif Talebi
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Projenizin detaylarını paylaşın, mimari ve inşaat uzmanlarımız size özel ön çalışmayı hazırlasın.
+              <div className="px-6 py-10 sm:px-10">
+                <div className="border-b-2 border-primary pb-4 pr-8">
+                  <h2 className="display text-2xl font-extrabold text-primary">
+                    Ön Fizibilite Talebi
+                  </h2>
+                  <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                    Arsanızın veya binanızın bilgilerini iletin; imar durumunu çıkarıp
+                    oluşabilecek bağımsız bölüm sayısını hesaplayalım. Bu çalışma ücretsizdir.
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-                  {/* Honeypot field */}
-                  <div className="absolute opacity-0 pointer-events-none h-0 overflow-hidden" aria-hidden="true">
+                <form onSubmit={handleSubmit} className="mt-8 space-y-6" noValidate>
+                  <div className="absolute h-0 overflow-hidden opacity-0 pointer-events-none" aria-hidden="true">
                     <input name="website" type="text" tabIndex={-1} autoComplete="off" />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Name Field */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="name" className="text-xs font-semibold text-foreground/90 uppercase tracking-wider flex items-center gap-1.5">
-                        <RiUser3Line className="text-secondary" /> Ad Soyad *
-                      </Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="quote-projectType">Ne için başvuruyorsunuz?</Label>
+                    <Select
+                      id="quote-projectType"
+                      name="projectType"
+                      value={formData.projectType}
+                      onChange={handleChange}
+                    >
+                      {projectTypes.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="quote-name">Ad Soyad *</Label>
                       <Input
-                        id="name"
+                        id="quote-name"
                         name="name"
-                        required
-                        placeholder="Örn: Ahmet Yılmaz"
                         value={formData.name}
                         onChange={handleChange}
-                        className="h-10 rounded-md bg-slate-50/50 border-input focus:bg-background text-sm"
+                        placeholder="Adınız Soyadınız"
                         aria-invalid={!!fieldErrors.name}
                       />
                       {fieldErrors.name && (
-                        <p className="text-xs text-destructive mt-1">{fieldErrors.name[0]}</p>
+                        <p className="text-sm text-destructive">{fieldErrors.name[0]}</p>
                       )}
                     </div>
 
-                    {/* Email Field */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="email" className="text-xs font-semibold text-foreground/90 uppercase tracking-wider flex items-center gap-1.5">
-                        <RiMailLine className="text-secondary" /> E-posta *
-                      </Label>
+                    <div className="space-y-2">
+                      <Label htmlFor="quote-phone">Telefon *</Label>
                       <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        required
-                        placeholder="ahmet@example.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="h-10 rounded-md bg-slate-50/50 border-input focus:bg-background text-sm"
-                        aria-invalid={!!fieldErrors.email}
-                      />
-                      {fieldErrors.email && (
-                        <p className="text-xs text-destructive mt-1">{fieldErrors.email[0]}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Phone Field */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="phone" className="text-xs font-semibold text-foreground/90 uppercase tracking-wider flex items-center gap-1.5">
-                        <RiPhoneLine className="text-secondary" /> Telefon *
-                      </Label>
-                      <Input
-                        id="phone"
+                        id="quote-phone"
                         name="phone"
                         type="tel"
-                        required
-                        placeholder="05XX XXX XX XX"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="h-10 rounded-md bg-slate-50/50 border-input focus:bg-background text-sm"
+                        placeholder="05XX XXX XX XX"
                         aria-invalid={!!fieldErrors.phone}
                       />
                       {fieldErrors.phone && (
-                        <p className="text-xs text-destructive mt-1">{fieldErrors.phone[0]}</p>
+                        <p className="text-sm text-destructive">{fieldErrors.phone[0]}</p>
                       )}
-                    </div>
-
-                    {/* Project Type Dropdown */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="projectType" className="text-xs font-semibold text-foreground/90 uppercase tracking-wider flex items-center gap-1.5">
-                        <RiBuilding4Line className="text-secondary" /> Hizmet / Proje Türü
-                      </Label>
-                      <select
-                        id="projectType"
-                        name="projectType"
-                        className="h-10 w-full rounded-md border border-input bg-slate-50/50 px-3 py-2 text-sm text-foreground focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer transition-colors"
-                        value={formData.projectType}
-                        onChange={handleChange}
-                      >
-                        <option value="Mimari Proje Tasarımı">Mimari Proje Tasarımı</option>
-                        <option value="İç Mimarlık & Dekorasyon">İç Mimarlık & Dekorasyon</option>
-                        <option value="İnşaat & Taahhüt Uygulama">İnşaat & Taahhüt Uygulama</option>
-                        <option value="Belediye & Ruhsat Takibi">Belediye & Ruhsat Takibi</option>
-                        <option value="Danışmanlık & Proje Revizyonu">Danışmanlık & Proje Revizyonu</option>
-                      </select>
                     </div>
                   </div>
 
-                  {/* Message Field */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="message" className="text-xs font-semibold text-foreground/90 uppercase tracking-wider flex items-center gap-1.5">
-                      <RiChat1Line className="text-secondary" /> Proje Özeti / Notunuz *
-                    </Label>
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="quote-email">E-posta *</Label>
+                      <Input
+                        id="quote-email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="ornek@mail.com"
+                        aria-invalid={!!fieldErrors.email}
+                      />
+                      {fieldErrors.email && (
+                        <p className="text-sm text-destructive">{fieldErrors.email[0]}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="quote-location">Konum (ilçe / mahalle)</Label>
+                      <Input
+                        id="quote-location"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleChange}
+                        placeholder="Örn: Arnavutköy, Hadımköy"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="quote-message">Projeniz hakkında *</Label>
                     <Textarea
-                      id="message"
+                      id="quote-message"
                       name="message"
-                      required
                       rows={4}
-                      placeholder="Lokasyon, tahmini metrekare veya projeden beklentilerinizi kısaca yazın..."
                       value={formData.message}
                       onChange={handleChange}
-                      className="rounded-md bg-slate-50/50 border-input focus:bg-background text-sm resize-none"
+                      placeholder="Arsanın veya binanın durumu, yaklaşık metrekare ve varsa ada/parsel bilgisi..."
                       aria-invalid={!!fieldErrors.message}
                     />
                     {fieldErrors.message && (
-                      <p className="text-xs text-destructive mt-1">{fieldErrors.message[0]}</p>
+                      <p className="text-sm text-destructive">{fieldErrors.message[0]}</p>
                     )}
                   </div>
 
                   {status === "error" && (
-                    <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm font-medium border border-destructive/20">
-                      Form gönderilirken bir hata oluştu. Lütfen e-posta ve telefon bilgilerinizi kontrol edip tekrar deneyin.
-                    </div>
+                    <p className="border-l-2 border-destructive pl-4 text-sm text-destructive">
+                      Form gönderilirken bir hata oluştu. Bilgilerinizi kontrol edip tekrar deneyin.
+                    </p>
                   )}
 
-                  {/* Submit Actions */}
-                  <div className="pt-3 flex items-center justify-end gap-3 border-t border-border mt-6">
-                    <Button type="button" variant="outline" onClick={onClose} disabled={status === "loading"} className="rounded-md px-5">
+                  <div className="flex flex-col gap-3 border-t border-border pt-6 sm:flex-row-reverse sm:items-center">
+                    <button
+                      type="submit"
+                      disabled={status === "loading"}
+                      className="w-full cursor-pointer bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                    >
+                      {status === "loading" ? "Gönderiliyor..." : "Talebi gönder"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      disabled={status === "loading"}
+                      className="w-full cursor-pointer border border-border px-8 py-4 text-base font-semibold text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 sm:w-auto"
+                    >
                       Vazgeç
-                    </Button>
-                    <Button type="submit" disabled={status === "loading"} className="gap-2 rounded-md px-6 font-semibold shadow-md">
-                      {status === "loading" ? (
-                        "Gönderiliyor..."
-                      ) : (
-                        <>
-                          <RiSendPlaneLine size={18} />
-                          Teklif Talebini Gönder
-                        </>
-                      )}
-                    </Button>
+                    </button>
                   </div>
                 </form>
               </div>

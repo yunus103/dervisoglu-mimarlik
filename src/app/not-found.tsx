@@ -1,34 +1,47 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { RiSearchLine } from "react-icons/ri";
+
+const links = [
+  { label: "Ana sayfa", href: "/" },
+  { label: "Hizmetlerimiz", href: "/hizmetler" },
+  { label: "Hakkımızda", href: "/hakkimizda" },
+  { label: "İletişim", href: "/iletisim" },
+];
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center gap-8 text-center px-4 relative overflow-hidden">
-      {/* Arka plan dekorasyonu */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 opacity-5">
-        <p className="text-[20rem] font-bold leading-none select-none">404</p>
-      </div>
+    <main className="flex min-h-screen flex-col justify-center bg-background">
+      <div className="mx-auto w-full max-w-[1400px] px-4 py-24 sm:px-8 lg:px-12">
+        <p className="data text-muted-foreground">Hata 404</p>
 
-      <div className="space-y-4">
-        <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-muted">
-          <RiSearchLine size={40} className="text-muted-foreground" />
-        </div>
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Aradığınızı bulamadık</h1>
-        <p className="text-muted-foreground max-w-md mx-auto text-lg">
-          Üzgünüz, aradığınız sayfa mevcut değil veya taşınmış olabilir. 
-          Adresi kontrol etmeyi deneyebilir veya ana sayfamıza dönebilirsiniz.
+        <h1 className="display mt-6 max-w-[16ch] text-4xl font-extrabold leading-[1.02] text-primary sm:text-5xl lg:text-6xl">
+          Aradığınız sayfa bulunamadı
+        </h1>
+
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+          Sayfa taşınmış veya adres yanlış yazılmış olabilir. Aşağıdaki bağlantılardan
+          devam edebilirsiniz.
         </p>
-      </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-4">
-        <Button size="lg" render={<Link href="/" />} className="px-8 transform transition hover:scale-105">
-          Ana Sayfaya Git
-        </Button>
-        <Button size="lg" variant="outline" render={<Link href="/iletisim" />} className="px-8">
-          Bize Ulaşın
-        </Button>
+        <nav className="mt-12 max-w-md border-t border-border">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group flex items-baseline gap-4 border-b border-border py-5 transition-colors hover:bg-primary focus-visible:bg-primary focus-visible:outline-none"
+            >
+              <span className="display flex-1 px-1 text-lg font-bold text-foreground transition-colors group-hover:text-white group-focus-visible:text-white">
+                {link.label}
+              </span>
+              <span
+                aria-hidden
+                className="shrink-0 pr-1 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-white group-focus-visible:text-white"
+              >
+                →
+              </span>
+            </Link>
+          ))}
+        </nav>
       </div>
-    </div>
+    </main>
   );
 }

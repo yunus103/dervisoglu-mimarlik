@@ -7,8 +7,6 @@ import { buildMetadata, getLayoutData } from "@/lib/seo";
 import { PageHero } from "@/components/layout/PageHero";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { AnimateGroup } from "@/components/ui/AnimateGroup";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ProjectsPage as ProjectsPageType, Project } from "@/types";
 
@@ -37,67 +35,82 @@ export default async function ProjectsHubPage() {
     getProjectsPageData(),
   ]);
 
+  const list = projects ?? [];
+
   return (
-    <div className="flex flex-col gap-12 md:gap-16 pb-16">
-      {/* Page Hero */}
+    <>
       <PageHero
         title={pageData?.heroTitle || pageData?.pageTitle || "Projelerimiz"}
-        subtitle={pageData?.heroSubtitle || pageData?.pageSubtitle || "Bugüne kadar başarıyla tamamladığımız çalışmalar."}
+        subtitle={pageData?.heroSubtitle || pageData?.pageSubtitle}
         backgroundImage={pageData?.heroImage}
       />
 
-      <div className="container mx-auto px-4">
-        {projects && projects.length > 0 ? (
-          <AnimateGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project: Project) => (
-              <Link key={project.slug?.current} href={`/projeler/${project.slug?.current}`} className="group block">
-                <article className="border border-border/80 rounded-md overflow-hidden bg-card hover:shadow-xl transition-all duration-300 h-full flex flex-col hover:-translate-y-1">
-                  {project.mainImage && (
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <SanityImage
-                        image={project.mainImage}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6 flex-grow flex flex-col justify-between">
-                    <div>
-                      <h2 className="font-heading font-bold text-xl mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                        {project.title}
-                      </h2>
-                    </div>
-                    <div className="mt-6">
-                      <span className="text-primary font-semibold text-sm tracking-wider uppercase group-hover:underline underline-offset-4 flex items-center">
-                        Projeyi İncele
-                        <span className="ml-1 group-hover:translate-x-1 transition-transform">→</span>
-                      </span>
-                    </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
-          </AnimateGroup>
-        ) : (
-          <FadeIn>
-            <p className="text-muted-foreground text-center py-16">Henüz eklenmiş bir proje bulunmuyor.</p>
-          </FadeIn>
-        )}
+      <section className="border-b border-border bg-background py-20 md:py-28">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
+          {list.length > 0 ? (
+            <ul className="grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
+              {list.map((project, i) => (
+                <li key={project.slug?.current}>
+                  <FadeIn direction="up" delay={Math.min(i, 5) * 0.06}>
+                    <Link
+                      href={`/projeler/${project.slug?.current ?? ""}`}
+                      className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                    >
+                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+                        {project.mainImage?.asset && (
+                          <SanityImage
+                            image={project.mainImage}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                          />
+                        )}
+                      </div>
 
-        {/* CTA Section */}
-        {pageData?.ctaLabel && pageData?.ctaLink && (
-          <FadeIn className="mt-16 md:mt-24 p-8 md:p-12 rounded-md bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-border text-center max-w-4xl mx-auto">
-            <h3 className="font-heading text-2xl md:text-3xl font-bold mb-4">Bir Projeniz mi Var?</h3>
-            <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-              Hayalinizdeki projeyi birlikte gerçeğe dönüştürelim. Uzman ekibimizle konuşmak için hemen iletişime geçin.
-            </p>
-            <Button size="lg" className="rounded-md font-semibold" render={<Link href={pageData.ctaLink} />}>
-              {pageData.ctaLabel}
-            </Button>
-          </FadeIn>
-        )}
-      </div>
-    </div>
+                      <div className="flex items-baseline gap-4 border-t border-border pt-4">
+                        <h2 className="display flex-1 text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
+                          {project.title}
+                        </h2>
+                        <span
+                          aria-hidden
+                          className="shrink-0 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-primary"
+                        >
+                          →
+                        </span>
+                      </div>
+                    </Link>
+                  </FadeIn>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <FadeIn>
+              <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
+                Projeler yakında bu sayfada yayınlanacaktır.
+              </p>
+            </FadeIn>
+          )}
+        </div>
+      </section>
+
+      {/* Kapanış */}
+      {pageData?.ctaLabel && pageData?.ctaLink && (
+        <section className="bg-primary text-white">
+          <div className="mx-auto max-w-[1400px] px-4 py-20 sm:px-8 lg:px-12 md:py-24">
+            <FadeIn direction="up">
+              <h2 className="display max-w-[18ch] text-3xl font-extrabold leading-[1.05] sm:text-4xl">
+                Projeniz için görüşelim
+              </h2>
+              <Link
+                href={pageData.ctaLink}
+                className="mt-8 inline-block bg-white px-7 py-4 text-base font-semibold text-primary transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                {pageData.ctaLabel}
+              </Link>
+            </FadeIn>
+          </div>
+        </section>
+      )}
+    </>
   );
 }

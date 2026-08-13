@@ -8,6 +8,15 @@ export const siteSettingsType = defineType({
     defineField({ name: "siteName", title: "Site Adı", type: "string", initialValue: "Dervişoğlu Mimarlık", validation: (Rule) => Rule.required() }),
     defineField({ name: "siteTagline", title: "Slogan", type: "string", initialValue: "Mimari Tasarım & Uygulama" }),
     defineField({
+      name: "footerDescription",
+      title: "Footer Tanıtım Metni",
+      type: "text",
+      rows: 4,
+      description: "Footer'da logo ve slogan altında görünen kısa kurumsal tanıtım yazısı.",
+      initialValue:
+        "Köklü deneyim ve çağdaş estetik anlayışıyla; konut, ticari ve kamu yapılarında mimari tasarımdan mühendislik ve anahtar teslim inşaat uygulamalarına kadar bütüncül çözümler sunuyoruz.",
+    }),
+    defineField({
       name: "enableProjectsPage",
       title: "Projeler Sayfasını Aktif Et",
       type: "boolean",

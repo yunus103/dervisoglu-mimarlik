@@ -9,7 +9,7 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { RiMailLine, RiPhoneLine, RiMapPinLine, RiArrowRightSLine } from "react-icons/ri";
+import { SanityImage } from "@/components/ui/SanityImage";
 
 import { SiteSettings, Navigation } from "@/types";
 
@@ -24,6 +24,7 @@ type SocialLink = {
   url: string;
 };
 
+/** Sosyal medya ikonları, marka tanınırlığı için bilinçli olarak korunur. */
 const socialIconMap: Record<string, React.ElementType> = {
   instagram: FaInstagram,
   facebook: FaFacebook,
@@ -64,131 +65,145 @@ export function Footer({ settings, navigation }: { settings: SiteSettings; navig
   const contact = settings?.contactInfo;
   const currentYear = new Date().getFullYear();
   const siteName = settings?.siteName || "Dervişoğlu Mimarlık";
-  const siteTagline = settings?.siteTagline || "Mimari Tasarım & Uygulama";
+  const siteTagline = settings?.siteTagline;
+
+  /** İletişim satırları; yalnızca Site Ayarları'nda dolu olanlar listelenir. */
+  const contactRows = [
+    contact?.address && { label: "Adres", value: contact.address, href: undefined },
+    contact?.phone && {
+      label: "Telefon",
+      value: contact.phone,
+      href: `tel:${contact.phone.replace(/\s/g, "")}`,
+    },
+    contact?.email && {
+      label: "E-posta",
+      value: contact.email,
+      href: `mailto:${contact.email}`,
+    },
+    contact?.whatsappNumber && {
+      label: "WhatsApp",
+      value: contact.whatsappNumber,
+      href: `https://wa.me/${contact.whatsappNumber.replace(/\D/g, "")}`,
+    },
+  ].filter(Boolean) as { label: string; value: string; href?: string }[];
 
   return (
-    <footer className="border-t border-border bg-slate-50/50 text-foreground">
-      <div className="container mx-auto px-4 lg:px-8 py-14">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-12">
-
-          {/* Marka & Tanıtım (Col 5) */}
-          <div className="md:col-span-5 space-y-4 pr-0 md:pr-6">
-            <div className="flex flex-col">
-              <span className="font-heading font-bold text-2xl tracking-tight text-primary leading-none">
-                {siteName}
-              </span>
-              {siteTagline && (
-                <span className="text-xs font-semibold tracking-[0.2em] text-secondary uppercase mt-1">
-                  {siteTagline}
+    <footer className="border-t border-border bg-background text-foreground">
+      <div className="mx-auto max-w-[1400px] px-4 py-16 sm:px-8 lg:px-12 md:py-20">
+        <div className="grid grid-cols-1 gap-x-12 gap-y-12 md:grid-cols-12">
+          {/* Marka */}
+          <div className="md:col-span-5">
+            <Link href="/" className="inline-flex items-center">
+              {settings?.logo?.asset ? (
+                <SanityImage
+                  image={settings.logo}
+                  width={600}
+                  height={160}
+                  fit="max"
+                  className="h-14 w-auto object-contain object-left"
+                />
+              ) : (
+                <span className="flex flex-col leading-none">
+                  <span className="display text-2xl font-extrabold tracking-tight text-primary">
+                    {siteName}
+                  </span>
+                  {siteTagline && (
+                    <span className="data mt-2 text-muted-foreground">{siteTagline}</span>
+                  )}
                 </span>
               )}
-            </div>
+            </Link>
 
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
-              Köklü deneyim ve çağdaş estetik anlayışıyla; konut, ticari ve kamu yapılarında mimari tasarımdan mühendislik ve anahtar teslim inşaat uygulamalarına kadar bütüncül çözümler sunuyoruz.
-            </p>
+            {settings?.footerDescription && (
+              <p className="mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
+                {settings.footerDescription}
+              </p>
+            )}
 
-            {/* Social Links */}
             {socialLinks.length > 0 && (
-              <div className="pt-2">
-                <div className="flex flex-wrap gap-2">
-                  {socialLinks.map((social, i) => {
-                    const Icon = socialIconMap[social.platform.toLowerCase()];
-                    if (!Icon) return null;
-                    return (
-                      <a
-                        key={i}
-                        href={social.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={social.platform}
-                        className="flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background text-muted-foreground hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 shadow-2xs"
-                      >
-                        <Icon size={16} />
-                      </a>
-                    );
-                  })}
-                </div>
+              <div className="mt-8 flex flex-wrap gap-3">
+                {socialLinks.map((social, i) => {
+                  const Icon = socialIconMap[social.platform.toLowerCase()];
+                  if (!Icon) return null;
+                  return (
+                    <a
+                      key={i}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={social.platform}
+                      className="flex h-10 w-10 items-center justify-center border border-border text-muted-foreground transition-colors hover:border-primary hover:bg-primary hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    >
+                      <Icon size={16} />
+                    </a>
+                  );
+                })}
               </div>
             )}
           </div>
 
-          {/* Hızlı Bağlantılar (Col 3) */}
-          <div className="md:col-span-3 space-y-4">
-            <h4 className="font-heading text-base font-semibold text-foreground tracking-wide">
-              Hızlı Bağlantılar
-            </h4>
-            <nav className="flex flex-col space-y-2.5">
+          {/* Bağlantılar */}
+          <div className="md:col-span-3">
+            <h2 className="display border-b-2 border-primary pb-3 text-sm font-bold uppercase tracking-wide text-primary">
+              Sayfalar
+            </h2>
+            <nav>
               {rawFooterLinks.map((item, i) => (
                 <Link
                   key={i}
                   href={resolveHref(item)}
                   target={item.openInNewTab ? "_blank" : undefined}
                   rel={item.openInNewTab ? "noopener noreferrer" : undefined}
-                  className="group flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors duration-150"
+                  className="block border-b border-border py-3.5 text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
-                  <RiArrowRightSLine className="size-4 text-muted-foreground/60 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
                   {item.label}
                 </Link>
               ))}
             </nav>
           </div>
 
-          {/* İletişim Bilgileri (Col 4) */}
-          <div className="md:col-span-4 space-y-4">
-            <h4 className="font-heading text-base font-semibold text-foreground tracking-wide">
-              İletişim & Ofis
-            </h4>
-            <div className="space-y-3 text-sm">
-              {contact?.address && (
-                <div className="flex items-start gap-3 text-muted-foreground">
-                  <RiMapPinLine className="shrink-0 size-5 text-secondary mt-0.5" />
-                  <span className="leading-snug">{contact.address}</span>
-                </div>
-              )}
-              {contact?.phone && (
-                <a
-                  href={`tel:${contact.phone}`}
-                  className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <RiPhoneLine className="shrink-0 size-5 text-secondary" />
-                  <span>{contact.phone}</span>
-                </a>
-              )}
-              {contact?.email && (
-                <a
-                  href={`mailto:${contact.email}`}
-                  className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <RiMailLine className="shrink-0 size-5 text-secondary" />
-                  <span>{contact.email}</span>
-                </a>
-              )}
-              {contact?.whatsappNumber && (
-                <a
-                  href={`https://wa.me/${contact.whatsappNumber.replace(/[^0-9]/g, "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-muted-foreground hover:text-emerald-600 transition-colors"
-                >
-                  <FaWhatsapp className="shrink-0 size-5 text-emerald-600" />
-                  <span>WhatsApp ile İletişime Geçin</span>
-                </a>
-              )}
+          {/* İletişim */}
+          {contactRows.length > 0 && (
+            <div className="md:col-span-4">
+              <h2 className="display border-b-2 border-primary pb-3 text-sm font-bold uppercase tracking-wide text-primary">
+                İletişim
+              </h2>
+              <dl>
+                {contactRows.map((row) => (
+                  <div key={row.label} className="border-b border-border py-4">
+                    <dt className="data text-muted-foreground">{row.label}</dt>
+                    <dd className="mt-1.5 text-sm leading-snug text-foreground">
+                      {row.href ? (
+                        <a
+                          href={row.href}
+                          target={row.href.startsWith("http") ? "_blank" : undefined}
+                          rel={row.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                          className="underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                        >
+                          {row.value}
+                        </a>
+                      ) : (
+                        row.value
+                      )}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Alt Telif Satırı */}
-        <div className="mt-12 border-t border-border/80 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-          <p className="text-center sm:text-left">
+        {/* Telif */}
+        <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center">
+          <p>
             © {currentYear} {siteName}. Tüm hakları saklıdır.
           </p>
-          <div className="flex items-center gap-6">
-            <Link href="/iletisim" className="hover:text-primary transition-colors">
-              Gizlilik & İletişim
-            </Link>
-          </div>
+          <Link
+            href="/iletisim"
+            className="transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            Gizlilik &amp; İletişim
+          </Link>
         </div>
       </div>
     </footer>
