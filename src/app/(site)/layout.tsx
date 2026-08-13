@@ -19,6 +19,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       {/* Sayfanın geri kalanı ayrıştırılmadan çalışması için en üstte durur */}
       <script dangerouslySetInnerHTML={{ __html: splashInitScript }} />
       <SplashScreen
+        logo={data?.settings?.logo}
         siteName={data?.settings?.siteName}
         siteTagline={data?.settings?.siteTagline}
       />

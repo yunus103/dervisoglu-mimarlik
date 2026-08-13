@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+import { SanityImage } from "@/components/ui/SanityImage";
+import { SanityImage as SanityImageType } from "@/types";
+
 interface SplashScreenProps {
+  logo?: SanityImageType;
   siteName?: string;
   siteTagline?: string;
 }
@@ -17,10 +21,10 @@ interface SplashScreenProps {
  * gösterildiyse veya kullanıcı hareket azaltma tercih ettiyse özniteliği hiç
  * eklemez, bileşen de kendini anında kaldırır.
  *
- * Marka adı görsel logo yerine tipografiyle verilir: logo koyu zeminde
- * okunmayabilir, yazı her koşulda okunur.
+ * Sanity'den gelen görsel logo koyu zeminde (`#0F172A`) net görünmesi için
+ * CSS `brightness-0 invert` filtresi ile beyaz tonda render edilir.
  */
-export function SplashScreen({ siteName, siteTagline }: SplashScreenProps) {
+export function SplashScreen({ logo, siteName, siteTagline }: SplashScreenProps) {
   const [active, setActive] = useState(true);
 
   useEffect(() => {
@@ -53,7 +57,23 @@ export function SplashScreen({ siteName, siteTagline }: SplashScreenProps) {
       transition={{ duration: 0.55, delay: 1.05, ease: [0.76, 0, 0.24, 1] }}
       onAnimationComplete={handleDone}
     >
-      {siteName && (
+      {logo?.asset ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.35 }}
+          className="flex items-center justify-center px-6"
+        >
+          <SanityImage
+            image={logo}
+            width={600}
+            height={200}
+            fit="max"
+            className="h-16 w-auto max-w-[280px] object-contain brightness-0 invert sm:h-20 sm:max-w-[360px]"
+            priority
+          />
+        </motion.div>
+      ) : siteName ? (
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -62,7 +82,7 @@ export function SplashScreen({ siteName, siteTagline }: SplashScreenProps) {
         >
           {siteName}
         </motion.p>
-      )}
+      ) : null}
 
       {/* Site genelindeki saç teli çizgi sisteminin habercisi */}
       <motion.span
