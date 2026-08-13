@@ -85,7 +85,10 @@ export function Header({ settings, navigation }: { settings: SiteSettings; navig
                 width={600}
                 height={160}
                 fit="max"
-                className="h-full max-h-12 w-auto object-contain object-left"
+                className={cn(
+                  "h-full max-h-12 w-auto object-contain object-left transition-[filter] duration-300",
+                  overlay && "brightness-0 invert"
+                )}
                 priority
               />
             ) : (

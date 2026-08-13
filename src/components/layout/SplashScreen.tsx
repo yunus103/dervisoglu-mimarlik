@@ -47,17 +47,17 @@ export function SplashScreen({ siteName, siteTagline }: SplashScreenProps) {
   return (
     <motion.div
       aria-hidden
-      className="splash fixed inset-0 z-100 flex-col items-center justify-center bg-[#0F172A]"
+      className="splash fixed inset-0 z-[100] flex-col items-center justify-center bg-[#0F172A]"
       initial={{ y: 0 }}
       animate={{ y: "-100%" }}
-      transition={{ duration: 0.45, delay: 0.78, ease: [0.76, 0, 0.24, 1] }}
+      transition={{ duration: 0.55, delay: 1.05, ease: [0.76, 0, 0.24, 1] }}
       onAnimationComplete={handleDone}
     >
       {siteName && (
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.28 }}
+          transition={{ duration: 0.35 }}
           className="display px-6 text-center text-3xl font-extrabold uppercase leading-none tracking-tight text-white sm:text-5xl"
         >
           {siteName}
@@ -68,7 +68,7 @@ export function SplashScreen({ siteName, siteTagline }: SplashScreenProps) {
       <motion.span
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
-        transition={{ duration: 0.4, delay: 0.25, ease: "easeInOut" }}
+        transition={{ duration: 0.45, delay: 0.3, ease: "easeInOut" }}
         className="mt-7 h-px w-40 origin-left bg-white/50 sm:w-56"
       />
 
@@ -76,7 +76,7 @@ export function SplashScreen({ siteName, siteTagline }: SplashScreenProps) {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.25, delay: 0.5 }}
+          transition={{ duration: 0.35, delay: 0.65 }}
           className="data mt-7 px-6 text-center text-white/45"
         >
           {siteTagline}

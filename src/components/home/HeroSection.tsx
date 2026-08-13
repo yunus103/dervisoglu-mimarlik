@@ -67,9 +67,9 @@ export function HeroSection({ data, phone, stages }: HeroSectionProps) {
                 className="object-cover"
                 priority
               />
-              {/* Metnin okunabilirliği için alttan yukarı koyulaşan katman */}
-              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/80 to-primary/35" />
-              <div className="absolute inset-0 bg-primary/25" />
+              {/* Metnin okunabilirliği için sol-alt odaklı ve fotoğraf canlılığını koruyan yumuşak katmanlar */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/50 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/80 via-transparent to-[#0F172A]/30" />
             </>
           ) : (
             <div className="absolute inset-0 bg-[linear-gradient(160deg,#0F172A_0%,#1E3A5F_55%,#24476F_100%)]" />

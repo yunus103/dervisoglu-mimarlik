@@ -112,6 +112,26 @@
   letter-spacing: -0.02em;
 }
 
+/* ---------------------------------------------------------------
+   Açılış perdesi.
+   Perde varsayılan olarak gizlidir; yalnızca sayfa boyanmadan önce çalışan
+   satır içi betik <html> üzerine data-splash="active" eklerse görünür.
+   Böylece tekrar gelen ziyaretçide veya JavaScript kapalıyken perde hiç
+   görünmez ve sayfa asla kilitli kalmaz.
+   ----------------------------------------------------------------*/
+.splash {
+  display: none;
+}
+
+html[data-splash="active"] .splash {
+  display: flex;
+}
+
+html[data-splash="active"] body {
+  overflow: hidden;
+}
+
+
 /* Ölçü/veri sesi: ay, süre, m². Süs değil, yalnızca sayı taşıyan yerlerde. */
 .data {
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
