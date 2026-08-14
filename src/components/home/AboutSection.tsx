@@ -43,8 +43,8 @@ export function AboutSection({
   return (
     <section className="border-t border-border bg-primary text-white">
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 lg:grid-cols-12">
-        {/* Metin */}
-        <div className="px-4 py-20 sm:px-8 lg:col-span-7 lg:px-12 lg:py-28">
+        {/* Metin — mobilde fotoğrafın altında, masaüstünde solda (order sırası aşağıda tersine döner) */}
+        <div className="order-2 px-4 py-14 sm:px-8 lg:order-none lg:col-span-7 lg:px-12 lg:py-28">
           <FadeIn direction="up">
             {displayTitle && (
               <h2 className="display max-w-[20ch] text-3xl font-extrabold leading-[1.05] sm:text-4xl lg:text-5xl">
@@ -113,8 +113,8 @@ export function AboutSection({
           )}
         </div>
 
-        {/* Görsel — çerçevesiz, kenara kadar akar */}
-        <div className="relative min-h-[320px] lg:col-span-5 lg:min-h-full">
+        {/* Görsel — çerçevesiz, kenara kadar akar. Mobilde metinden önce gelir. */}
+        <div className="relative order-1 min-h-[280px] lg:order-none lg:col-span-5 lg:min-h-full">
           {image?.asset ? (
             <SanityImage
               image={image}

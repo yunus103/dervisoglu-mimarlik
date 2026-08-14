@@ -10,6 +10,7 @@ import {
 import { buildMetadata, portableTextToPlainText } from "@/lib/seo";
 import { RichText } from "@/components/ui/RichText";
 import { SanityImage } from "@/components/ui/SanityImage";
+import { FAQ } from "@/components/ui/FAQ";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { PageHero } from "@/components/layout/PageHero";
 import Link from "next/link";
@@ -60,20 +61,6 @@ export default async function ServicePage({ params }: Props) {
 
       <PageHero title={service.title} subtitle={service.summary} />
 
-      {/* Görsel — çerçevesiz, tam genişlik */}
-      {service.mainImage?.asset && (
-        <div className="relative h-64 w-full bg-muted md:h-[440px]">
-          <SanityImage
-            image={service.mainImage}
-            fill
-            sizes="100vw"
-            quality={90}
-            className="object-cover"
-            priority
-          />
-        </div>
-      )}
-
       <section className="border-b border-border bg-background py-16 md:py-24">
         <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
           <div className="grid grid-cols-1 gap-x-16 gap-y-14 lg:grid-cols-12">
@@ -83,9 +70,38 @@ export default async function ServicePage({ params }: Props) {
                 <p className="data text-muted-foreground">{categoryLabel}</p>
               </FadeIn>
 
+              {/* Ana Görsel - İçerik alanı genişliğinde */}
+              {service.mainImage?.asset && (
+                <FadeIn delay={0.05} className="mt-6">
+                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg bg-muted shadow-sm">
+                    <SanityImage
+                      image={service.mainImage}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 800px"
+                      quality={90}
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                </FadeIn>
+              )}
+
               {service.body && service.body.length > 0 && (
                 <FadeIn delay={0.1}>
-                  <RichText value={service.body} className="mt-8 max-w-prose leading-relaxed" />
+                  <RichText value={service.body} className="mt-8 w-full leading-relaxed" />
+                </FadeIn>
+              )}
+
+              {/* Sıkça Sorulan Sorular (SSS) */}
+              {service.faq && service.faq.length > 0 && (
+                <FadeIn delay={0.2} className="mt-16 border-t border-border pt-12">
+                  <h2 className="display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+                    Sıkça Sorulan Sorular
+                  </h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Bu hizmetimiz ile ilgili en çok merak edilen konular ve yanıtları.
+                  </p>
+                  <FAQ items={service.faq} className="mt-8" />
                 </FadeIn>
               )}
             </div>

@@ -1,4 +1,6 @@
 import { FadeIn } from "@/components/ui/FadeIn";
+import { SanityImage } from "@/components/ui/SanityImage";
+import { ArchitecturalMark } from "@/components/ui/ArchitecturalMark";
 import Link from "next/link";
 import { groupServicesByCategory } from "@/lib/services";
 import { Service, ServiceCategoryLabels } from "@/types";
@@ -27,7 +29,15 @@ export function ServicesSection({
   if (groups.length === 0) return null;
 
   return (
-    <section className="border-t border-border bg-background py-20 md:py-28">
+    <section className="relative border-t border-border bg-background py-20 md:py-28">
+      {/* Koyu Hakkımızda bölümünden aydınlık zemine geçişi işaretleyen nirengi noktası */}
+      <div
+        aria-hidden
+        className="absolute left-1/2 top-0 hidden -translate-x-1/2 -translate-y-1/2 bg-background px-3 sm:block"
+      >
+        <ArchitecturalMark className="h-7 w-7 text-accent/50" />
+      </div>
+
       <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
         {(title || subtitle) && (
           <FadeIn direction="up">
@@ -57,10 +67,26 @@ export function ServicesSection({
                     <li key={service.slug?.current || service.title}>
                       <Link
                         href={`/hizmetler/${service.slug?.current ?? ""}`}
-                        className="group flex items-baseline gap-5 border-b border-border py-6 transition-colors hover:bg-primary focus-visible:bg-primary focus-visible:outline-none"
+                        className="group flex items-center gap-4 border-b border-border py-5 transition-colors hover:bg-primary focus-visible:bg-primary focus-visible:outline-none sm:gap-5"
                       >
+                        {/* Küçük kare görsel — yüklenmemişse aynı nirengi motifi yer tutucu olarak kalır */}
+                        <span className="relative h-16 w-16 shrink-0 overflow-hidden border border-border bg-muted sm:h-20 sm:w-20">
+                          {service.mainImage?.asset ? (
+                            <SanityImage
+                              image={service.mainImage}
+                              fill
+                              sizes="80px"
+                              className="object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                          ) : (
+                            <span className="absolute inset-0 flex items-center justify-center text-accent/40">
+                              <ArchitecturalMark className="h-6 w-6" />
+                            </span>
+                          )}
+                        </span>
+
                         <span className="min-w-0 flex-1 px-1">
-                          <span className="display block text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-white group-focus-visible:text-white lg:text-2xl">
+                          <span className="display block text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-white group-focus-visible:text-white lg:text-xl">
                             {service.title}
                           </span>
                           {service.summary && (
@@ -71,7 +97,7 @@ export function ServicesSection({
                         </span>
                         <span
                           aria-hidden
-                          className="shrink-0 pr-1 text-lg text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-white group-focus-visible:text-white"
+                          className="hidden shrink-0 pr-1 text-lg text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-white group-focus-visible:text-white sm:block"
                         >
                           →
                         </span>

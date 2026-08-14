@@ -94,6 +94,28 @@ export const serviceType = defineType({
         { type: "customHtml" },
       ],
     }),
+    defineField({
+      name: "faq",
+      title: "Sıkça Sorulan Sorular (SSS)",
+      type: "array",
+      description: "Bu hizmete özel soru ve cevaplar. Boş bırakılırsa SSS bölümü gösterilmez.",
+      of: [
+        {
+          type: "object",
+          title: "Soru & Cevap",
+          fields: [
+            defineField({ name: "question", title: "Soru", type: "string", validation: (Rule) => Rule.required() }),
+            defineField({ name: "answer", title: "Cevap", type: "text", rows: 3, validation: (Rule) => Rule.required() }),
+          ],
+          preview: {
+            select: {
+              title: "question",
+              subtitle: "answer",
+            },
+          },
+        },
+      ],
+    }),
     defineField({ name: "seo", title: "SEO", type: "seo" }),
   ],
 });

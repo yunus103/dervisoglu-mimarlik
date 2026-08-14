@@ -108,6 +108,7 @@ export interface Service {
   order?: number;
   mainImage?: SanityImage;
   body?: any[];
+  faq?: FaqItem[];
   seo?: SeoSettings;
 }
 
