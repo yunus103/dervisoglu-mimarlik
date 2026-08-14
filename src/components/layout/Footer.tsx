@@ -1,40 +1,7 @@
 import Link from "next/link";
-import {
-  FaInstagram,
-  FaFacebook,
-  FaLinkedin,
-  FaYoutube,
-  FaTiktok,
-  FaPinterest,
-  FaWhatsapp,
-} from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
 import { SanityImage } from "@/components/ui/SanityImage";
-
-import { SiteSettings, Navigation } from "@/types";
-
-type NavItem = {
-  label: string;
-  href: string;
-  openInNewTab?: boolean;
-};
-
-type SocialLink = {
-  platform: string;
-  url: string;
-};
-
-/** Sosyal medya ikonları, marka tanınırlığı için bilinçli olarak korunur. */
-const socialIconMap: Record<string, React.ElementType> = {
-  instagram: FaInstagram,
-  facebook: FaFacebook,
-  twitter: FaXTwitter,
-  linkedin: FaLinkedin,
-  youtube: FaYoutube,
-  tiktok: FaTiktok,
-  pinterest: FaPinterest,
-  whatsapp: FaWhatsapp,
-};
+import { SiteSettings, Navigation, NavItem, SocialLink } from "@/types";
+import { socialIconMap } from "@/lib/social-icons";
 
 const defaultFooterLinks: NavItem[] = [
   { label: "Hakkımızda", href: "/hakkimizda" },

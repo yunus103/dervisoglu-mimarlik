@@ -15,6 +15,7 @@ import { ProjectsSection } from "@/components/home/ProjectsSection";
 import { BlogSection } from "@/components/home/BlogSection";
 import { FaqSection } from "@/components/home/FaqSection";
 import { HomeCtaSection } from "@/components/home/HomeCtaSection";
+import { SocialBanner } from "@/components/home/SocialBanner";
 import {
   homeFallback,
   homeFallbackAboutFacts,
@@ -166,6 +167,9 @@ export default async function HomePage() {
         scopeItems={pickList(data?.ctaScopeItems, homeFallbackCtaScopeItems)}
         phone={phone}
       />
+
+      {/* 9. Sosyal Medya & Bilgi İçerikleri Takip Bandı */}
+      <SocialBanner socialLinks={settings?.socialLinks} showBlog={showBlog} />
     </div>
   );
 }

@@ -5,7 +5,8 @@ import { buildMetadata, getLayoutData } from "@/lib/seo";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { PageHero } from "@/components/layout/PageHero";
-import { ContactPage as ContactPageType } from "@/types";
+import { ContactPage as ContactPageType, SocialLink } from "@/types";
+import { socialIconMap } from "@/lib/social-icons";
 
 export async function generateMetadata(): Promise<Metadata> {
   const data = await cachedFetch<ContactPageType>(contactPageQuery, {}, { next: { tags: ["contact"] } });
@@ -23,6 +24,7 @@ export default async function ContactPage() {
   ]);
 
   const contact = settings?.contactInfo;
+  const socialLinks: SocialLink[] = (settings?.socialLinks || []).filter((s) => s.url);
   const whatsappHref = contact?.whatsappNumber
     ? `https://wa.me/${contact.whatsappNumber.replace(/\D/g, "")}`
     : undefined;
@@ -75,8 +77,8 @@ export default async function ContactPage() {
               />
             </FadeIn>
 
-            {/* Doğrudan kanallar */}
-            {channels.length > 0 && (
+            {/* Doğrudan kanallar ve Sosyal Medya */}
+            {(channels.length > 0 || socialLinks.length > 0) && (
               <FadeIn direction="up" delay={0.1} className="lg:col-span-5">
                 <div>
                   {data?.directTitle && (
@@ -85,32 +87,63 @@ export default async function ContactPage() {
                     </h2>
                   )}
 
-                  <dl>
-                    {channels.map((channel) => (
-                      <div key={channel.label} className="border-b border-border py-5">
-                        <dt className="data text-muted-foreground">{channel.label}</dt>
-                        <dd className="mt-2 text-base font-medium text-foreground">
-                          {channel.href ? (
-                            <a
-                              href={channel.href}
-                              target={channel.href.startsWith("http") ? "_blank" : undefined}
-                              rel={channel.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                              className="underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                            >
-                              {channel.value}
-                            </a>
-                          ) : (
-                            channel.value
-                          )}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
+                  {channels.length > 0 && (
+                    <dl>
+                      {channels.map((channel) => (
+                        <div key={channel.label} className="border-b border-border py-5">
+                          <dt className="data text-muted-foreground">{channel.label}</dt>
+                          <dd className="mt-2 text-base font-medium text-foreground">
+                            {channel.href ? (
+                              <a
+                                href={channel.href}
+                                target={channel.href.startsWith("http") ? "_blank" : undefined}
+                                rel={channel.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                                className="underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                              >
+                                {channel.value}
+                              </a>
+                            ) : (
+                              channel.value
+                            )}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
 
                   {data?.responseNote && (
                     <p className="mt-6 border-l-2 border-primary/25 pl-4 text-sm leading-relaxed text-muted-foreground">
                       {data.responseNote}
                     </p>
+                  )}
+
+                  {socialLinks.length > 0 && (
+                    <div className="mt-10 border-t border-border pt-8">
+                      <h3 className="display text-sm font-bold uppercase tracking-wider text-primary">
+                        Sosyal Medya
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        Mimari projelerimizi, imar süreçleri ve teknik rehber içeriklerimizi sosyal medya hesaplarımızdan takip edebilirsiniz.
+                      </p>
+                      <div className="mt-5 flex flex-wrap items-center gap-3">
+                        {socialLinks.map((social, i) => {
+                          const Icon = socialIconMap[social.platform.toLowerCase()];
+                          if (!Icon) return null;
+                          return (
+                            <a
+                              key={i}
+                              href={social.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`${social.platform} sayfamızı ziyaret edin`}
+                              className="flex h-14 w-14 items-center justify-center rounded-xl border border-border bg-background text-foreground shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary hover:bg-primary hover:text-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                            >
+                              <Icon size={24} />
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
                 </div>
               </FadeIn>
