@@ -61,6 +61,15 @@ export function Header({ settings, navigation }: { settings: SiteSettings; navig
     setMenuOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [menuOpen]);
+
   const isActive = (item: NavItem) => {
     const href = resolveHref(item);
     if (href === "/" && pathname !== "/") return false;
@@ -144,73 +153,80 @@ export function Header({ settings, navigation }: { settings: SiteSettings; navig
             </button>
           </div>
         </div>
-
-        {/* Mobil menü */}
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="overflow-hidden border-t border-border bg-background text-foreground md:hidden"
-            >
-              <nav className="mx-auto max-w-[1400px] px-4 py-2 sm:px-8">
-                {rawLinks.map((item, i) => (
-                  <div key={i} className="border-b border-border last:border-b-0">
-                    <Link
-                      href={resolveHref(item)}
-                      className={cn(
-                        "block py-4 text-base transition-colors hover:text-primary",
-                        isActive(item) ? "font-semibold text-primary" : "text-foreground"
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                    {item.subLinks && item.subLinks.length > 0 && (
-                      <div className="ml-1 border-l border-border pb-3 pl-4">
-                        {item.subLinks.map((sub, j) => (
-                          <Link
-                            key={j}
-                            href={resolveHref(sub)}
-                            className={cn(
-                              "block py-2 text-sm transition-colors hover:text-primary",
-                              isActive(sub) ? "text-primary" : "text-muted-foreground"
-                            )}
-                          >
-                            {sub.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                <div className="flex flex-col gap-3 py-5">
-                  {phone && (
-                    <a
-                      href={`tel:${phone.replace(/\s/g, "")}`}
-                      className="text-lg font-semibold tabular-nums text-primary"
-                    >
-                      {phone}
-                    </a>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setQuoteModalOpen(true);
-                    }}
-                    className="w-full cursor-pointer bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-                  >
-                    Teklif Al
-                  </button>
-                </div>
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </header>
+
+      {/*
+        Mobil menü — tam ekran. Header'ın DIŞINDA, ayrı bir kardeş eleman olarak
+        render edilir: header açıkken `backdrop-blur` sınıfı alıyor, bu da CSS'te
+        `position: fixed` alt elemanlar için header'ı yeni bir konumlandırma
+        referansı (containing block) yapıyor. Menü header'ın içinde kalsaydı,
+        "fixed" konumlandırması viewport yerine 80px yükseklikteki header
+        kutusuna göre hesaplanır ve menü küçük bir kutuya sıkışırdı.
+      */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="fixed inset-x-0 top-20 bottom-0 z-40 flex flex-col bg-primary text-white md:hidden"
+          >
+            <nav className="flex flex-1 flex-col justify-center overflow-y-auto px-6 sm:px-8">
+              {rawLinks.map((item, i) => (
+                <div key={i} className="border-b border-white/15">
+                  <Link
+                    href={resolveHref(item)}
+                    className={cn(
+                      "display block py-4 text-2xl font-bold leading-tight transition-colors",
+                      isActive(item) ? "text-white" : "text-white/85"
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                  {item.subLinks && item.subLinks.length > 0 && (
+                    <div className="flex flex-col pb-4">
+                      {item.subLinks.map((sub, j) => (
+                        <Link
+                          key={j}
+                          href={resolveHref(sub)}
+                          className={cn(
+                            "py-2 text-base transition-colors",
+                            isActive(sub) ? "text-white" : "text-white/60"
+                          )}
+                        >
+                          {sub.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </nav>
+
+            <div className="border-t border-white/15 px-6 py-6 sm:px-8">
+              {phone && (
+                <a
+                  href={`tel:${phone.replace(/\s/g, "")}`}
+                  className="block py-2 text-xl font-semibold tabular-nums text-white underline-offset-4 hover:underline"
+                >
+                  {phone}
+                </a>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  setQuoteModalOpen(true);
+                }}
+                className="mt-4 w-full cursor-pointer bg-white px-6 py-4 text-base font-semibold text-primary transition-opacity hover:opacity-90"
+              >
+                Teklif Al
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <QuickQuoteModal isOpen={quoteModalOpen} onClose={() => setQuoteModalOpen(false)} />
     </>
