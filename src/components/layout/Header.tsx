@@ -86,9 +86,9 @@ export function Header({ settings, navigation }: { settings: SiteSettings; navig
             : "border-b border-border bg-background/95 text-foreground backdrop-blur-md supports-[backdrop-filter]:bg-background/85"
         )}
       >
-        <div className="mx-auto flex h-20 max-w-[1400px] items-center justify-between px-4 sm:px-8 lg:px-12">
+        <div className="mx-auto flex h-20 max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-8 xl:px-12">
           {/* Logo */}
-          <Link href="/" className="flex h-full items-center py-4">
+          <Link href="/" className="flex h-full shrink-0 items-center py-4">
             {settings?.logo ? (
               <SanityImage
                 image={settings.logo}
@@ -112,18 +112,18 @@ export function Header({ settings, navigation }: { settings: SiteSettings; navig
           </Link>
 
           {/* Masaüstü navigasyon */}
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-4 min-[1085px]:gap-6 xl:gap-8 min-[969px]:flex">
             {rawLinks.map((item, i) => (
               <DesktopNavItem key={i} item={item} active={isActive(item)} overlay={overlay} />
             ))}
           </nav>
 
           {/* Telefon + teklif + mobil menü */}
-          <div className="flex items-center gap-5">
+          <div className="flex shrink-0 items-center gap-4 min-[1085px]:gap-5">
             {phone && (
               <a
                 href={`tel:${phone.replace(/\s/g, "")}`}
-                className="hidden text-base font-semibold tabular-nums underline-offset-4 hover:underline lg:block"
+                className="hidden text-base font-semibold tabular-nums underline-offset-4 hover:underline min-[1085px]:block whitespace-nowrap"
               >
                 {phone}
               </a>
@@ -133,7 +133,7 @@ export function Header({ settings, navigation }: { settings: SiteSettings; navig
               type="button"
               onClick={() => setQuoteModalOpen(true)}
               className={cn(
-                "hidden cursor-pointer px-6 py-3 text-sm font-semibold transition-colors sm:inline-flex",
+                "hidden cursor-pointer px-5 py-2.5 min-[1085px]:px-6 min-[1085px]:py-3 text-sm font-semibold transition-colors sm:inline-flex shrink-0",
                 overlay
                   ? "bg-white text-primary hover:bg-white/90"
                   : "bg-primary text-primary-foreground hover:opacity-90"
@@ -144,7 +144,7 @@ export function Header({ settings, navigation }: { settings: SiteSettings; navig
 
             <button
               type="button"
-              className="-mr-2 flex h-10 w-10 items-center justify-center md:hidden"
+              className="-mr-2 flex h-10 w-10 items-center justify-center min-[969px]:hidden"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Menüyü aç/kapat"
               aria-expanded={menuOpen}
@@ -170,7 +170,7 @@ export function Header({ settings, navigation }: { settings: SiteSettings; navig
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="fixed inset-x-0 top-20 bottom-0 z-40 flex flex-col bg-primary text-white md:hidden"
+            className="fixed inset-x-0 top-20 bottom-0 z-40 flex flex-col bg-primary text-white min-[969px]:hidden"
           >
             <nav className="flex flex-1 flex-col justify-center overflow-y-auto px-6 sm:px-8">
               {rawLinks.map((item, i) => (
@@ -249,7 +249,7 @@ function DesktopNavItem({
   const reallyActive = active || isSubActive;
 
   const linkClass = cn(
-    "group relative py-2 text-base transition-opacity hover:opacity-100",
+    "group relative py-2 text-sm min-[1085px]:text-base whitespace-nowrap transition-opacity hover:opacity-100",
     reallyActive ? "font-semibold opacity-100" : "opacity-80"
   );
 
@@ -284,7 +284,7 @@ function DesktopNavItem({
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
-      <Link href={resolveHref(item)} className={cn(linkClass, "flex items-center gap-1.5")}>
+      <Link href={resolveHref(item)} className={cn(linkClass, "flex items-center gap-1.5 whitespace-nowrap")}>
         {item.label}
         <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <RiArrowDownSLine size={16} />
