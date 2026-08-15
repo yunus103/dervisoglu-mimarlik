@@ -18,6 +18,7 @@ function resolveHref(item: NavItem): string {
 const defaultNavLinks: NavItem[] = [
   { label: "Hakkımızda", href: "/hakkimizda" },
   { label: "Hizmetler", href: "/hizmetler" },
+  { label: "Çalışma Sürecimiz", href: "/surec" },
   { label: "Projeler", href: "/projeler" },
   { label: "Blog", href: "/blog" },
   { label: "İletişim", href: "/iletisim" },

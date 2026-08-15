@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { QuickQuoteModal } from "@/components/forms/QuickQuoteModal";
-import { StageAxis } from "./StageAxis";
-import { SanityImage as SanityImageType, CtaLink, ProcessStep } from "@/types";
+import { SanityImage as SanityImageType, CtaLink } from "@/types";
 
 interface HeroSectionProps {
   data?: {
@@ -13,18 +13,17 @@ interface HeroSectionProps {
     heroSubtitle?: string;
     heroCtaLabel?: string;
     heroCtaLink?: CtaLink;
+    heroSecondaryCtaLabel?: string;
+    heroSecondaryCtaLink?: CtaLink;
   };
-  phone?: string;
-  /** Hero altındaki şeritte gösterilen aşamalar (Süreç bölümüyle aynı kaynak) */
-  stages?: ProcessStep[] | null;
 }
 
 export function resolveLink(linkData?: CtaLink) {
-  if (!linkData) return "/projeler";
-  if (linkData.linkType === "manual") return linkData.manual || "/projeler";
+  if (!linkData) return "/hizmetler";
+  if (linkData.linkType === "manual") return linkData.manual || "/hizmetler";
 
   const ref = linkData.internal;
-  if (!ref || !ref._type) return "/projeler";
+  if (!ref || !ref._type) return "/hizmetler";
 
   switch (ref._type) {
     case "service":
@@ -38,16 +37,17 @@ export function resolveLink(linkData?: CtaLink) {
     case "contactPage":
       return `/iletisim`;
     default:
-      return "/projeler";
+      return "/hizmetler";
   }
 }
 
-export function HeroSection({ data, phone, stages }: HeroSectionProps) {
+export function HeroSection({ data }: HeroSectionProps) {
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
 
   const title = data?.heroTitle;
   const subtitle = data?.heroSubtitle;
   const ctaLabel = data?.heroCtaLabel;
+  const secondaryCtaLabel = data?.heroSecondaryCtaLabel;
 
   return (
     <>
@@ -90,31 +90,26 @@ export function HeroSection({ data, phone, stages }: HeroSectionProps) {
             </p>
           )}
 
-          <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <div className="mt-10 flex flex-wrap items-center gap-4 sm:gap-6">
             {ctaLabel && (
               <button
                 type="button"
                 onClick={() => setIsQuoteOpen(true)}
-                className="cursor-pointer bg-white px-7 py-4 text-base font-semibold text-primary transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="cursor-pointer bg-white px-7 py-4 text-base font-semibold text-primary transition-all duration-200 hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 {ctaLabel}
               </button>
             )}
 
-            {phone && (
-              <a
-                href={`tel:${phone.replace(/\s/g, "")}`}
-                className="text-xl font-semibold tabular-nums underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            {secondaryCtaLabel && (
+              <Link
+                href={resolveLink(data?.heroSecondaryCtaLink)}
+                className="cursor-pointer border border-white/40 bg-white/10 px-7 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:border-white hover:bg-white hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
-                {phone}
-              </a>
+                {secondaryCtaLabel}
+              </Link>
             )}
           </div>
-        </div>
-
-        {/* Sayfanın kurgusu burada tanıtılıyor */}
-        <div className="relative z-10">
-          <StageAxis stages={stages} />
         </div>
       </section>
 

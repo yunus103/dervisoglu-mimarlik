@@ -13,16 +13,12 @@ import { ServicesSection } from "@/components/home/ServicesSection";
 import { ProcessSection } from "@/components/home/ProcessSection";
 import { ProjectsSection } from "@/components/home/ProjectsSection";
 import { BlogSection } from "@/components/home/BlogSection";
-import { FaqSection } from "@/components/home/FaqSection";
 import { HomeCtaSection } from "@/components/home/HomeCtaSection";
 import { SocialBanner } from "@/components/home/SocialBanner";
 import {
   homeFallback,
   homeFallbackAboutFacts,
-  homeFallbackAboutTeams,
   homeFallbackCtaScopeItems,
-  homeFallbackFaqItems,
-  homeFallbackProcessSteps,
 } from "@/lib/home-fallback";
 import { HomePage as HomePageType, Service, Project, BlogPost } from "@/types";
 
@@ -84,33 +80,32 @@ export default async function HomePage() {
   const pickList = <T,>(value: T[] | null | undefined, fallback: T[]): T[] =>
     value && value.length > 0 ? value : fallback;
 
-  const processSteps = pickList(data?.processSteps, homeFallbackProcessSteps);
-
   return (
     <div className="flex flex-col w-full min-h-screen">
-      {/* 1. Hero — tez cümlesi ve aşama şeridi */}
+      {/* 1. Hero — tez cümlesi */}
       <HeroSection
         data={{
           ...data,
           heroTitle: pick(data?.heroTitle, homeFallback.heroTitle),
           heroSubtitle: pick(data?.heroSubtitle, homeFallback.heroSubtitle),
           heroCtaLabel: pick(data?.heroCtaLabel, homeFallback.heroCtaLabel),
+          heroSecondaryCtaLabel: pick(
+            data?.heroSecondaryCtaLabel,
+            homeFallback.heroSecondaryCtaLabel
+          ),
+          heroSecondaryCtaLink: data?.heroSecondaryCtaLink || homeFallback.heroSecondaryCtaLink,
         }}
-        phone={phone}
-        stages={processSteps}
       />
 
-      {/* 2. Süreç — sayfanın omurgası, aşamalar + aşama soruları */}
-      <ProcessSection
-        title={pick(data?.processTitle, homeFallback.processTitle)}
-        subtitle={pick(data?.processSubtitle, homeFallback.processSubtitle)}
-        steps={processSteps}
-        teamLabel={pick(data?.processTeamLabel, homeFallback.processTeamLabel)}
-        deliverableLabel={pick(
-          data?.processDeliverableLabel,
-          homeFallback.processDeliverableLabel
-        )}
-        footerNote={pick(data?.processFooterNote, homeFallback.processFooterNote)}
+      {/* 2. Kısa Hakkımızda özeti */}
+      <AboutSection
+        title={pick(data?.aboutTitle, homeFallback.aboutTitle)}
+        subtitle={pick(data?.aboutSubtitle, homeFallback.aboutSubtitle)}
+        text={data?.aboutText}
+        image={data?.aboutImage}
+        ctaLabel={pick(data?.aboutCtaLabel, homeFallback.aboutCtaLabel)}
+        ctaLink={pick(data?.aboutCtaLink, homeFallback.aboutCtaLink)}
+        facts={pickList(data?.aboutFacts, homeFallbackAboutFacts)}
       />
 
       {/* 3. Hizmetler — kategoriye ayrılmış liste, tamamı Sanity'den */}
@@ -119,18 +114,16 @@ export default async function HomePage() {
         subtitle={pick(data?.servicesSubtitle, homeFallback.servicesSubtitle)}
         services={servicesToDisplay}
         categoryLabels={data?.serviceCategories}
+        ctaLabel={pick(data?.servicesCtaLabel, homeFallback.servicesCtaLabel)}
+        ctaLink={pick(data?.servicesCtaLink, homeFallback.servicesCtaLink)}
       />
 
-      {/* 4. Kurumsal yapı — kendi ekiplerimiz ve rakamlar */}
-      <AboutSection
-        title={pick(data?.aboutTitle, homeFallback.aboutTitle)}
-        subtitle={pick(data?.aboutSubtitle, homeFallback.aboutSubtitle)}
-        text={data?.aboutText}
-        image={data?.aboutImage}
-        ctaLabel={pick(data?.aboutCtaLabel, homeFallback.aboutCtaLabel)}
-        ctaLink={pick(data?.aboutCtaLink, homeFallback.aboutCtaLink)}
-        teams={pickList(data?.aboutTeams, homeFallbackAboutTeams)}
-        facts={pickList(data?.aboutFacts, homeFallbackAboutFacts)}
+      {/* 4. Çalışma Sürecimiz & SSS yönlendirmesi */}
+      <ProcessSection
+        title={pick(data?.processTeaserTitle, homeFallback.processTeaserTitle)}
+        text={pick(data?.processTeaserText, homeFallback.processTeaserText)}
+        processCtaLabel={pick(data?.processCtaLabel, homeFallback.processCtaLabel)}
+        faqCtaLabel={pick(data?.faqCtaLabel, homeFallback.faqCtaLabel)}
       />
 
       {/* 5. Öne Çıkan Projeler (Eğer Sanity Studio'dan pasif edilmediyse) */}
@@ -151,14 +144,7 @@ export default async function HomePage() {
         />
       )}
 
-      {/* 7. Aşamalara girmeyen genel sorular */}
-      <FaqSection
-        title={pick(data?.faqTitle, homeFallback.faqTitle)}
-        subtitle={pick(data?.faqSubtitle, homeFallback.faqSubtitle)}
-        items={pickList(data?.faqItems, homeFallbackFaqItems)}
-      />
-
-      {/* 8. Kapanış — somut ön fizibilite teklifi */}
+      {/* 7. Kapanış — somut ön fizibilite teklifi */}
       <HomeCtaSection
         title={pick(data?.ctaTitle, homeFallback.ctaTitle)}
         text={pick(data?.ctaText, homeFallback.ctaText)}
@@ -168,7 +154,7 @@ export default async function HomePage() {
         phone={phone}
       />
 
-      {/* 9. Sosyal Medya & Bilgi İçerikleri Takip Bandı */}
+      {/* 8. Sosyal Medya & Bilgi İçerikleri Takip Bandı */}
       <SocialBanner socialLinks={settings?.socialLinks} showBlog={showBlog} />
     </div>
   );

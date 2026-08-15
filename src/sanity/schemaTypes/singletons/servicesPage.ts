@@ -39,7 +39,7 @@ export const servicesPageType = defineType({
       type: "string",
       group: "content",
       description: "Hizmet dokümanında \"İnşaat & Uygulama\" seçilen hizmetlerin üstünde görünen başlık.",
-      initialValue: "İnşaat & Uygulama Hizmetleri",
+      initialValue: "Uygulama & Yapım Süreçleri",
     }),
     defineField({
       name: "emptyText",

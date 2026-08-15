@@ -29,11 +29,16 @@ export const homePageQuery = groq`*[_type == "homePage"][0] {
     manual,
     internal->{ _type, "slug": slug.current }
   },
+  heroSecondaryCtaLabel,
+  heroSecondaryCtaLink {
+    linkType,
+    manual,
+    internal->{ _type, "slug": slug.current }
+  },
   heroImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop },
   aboutTitle, aboutSubtitle, aboutText,
   aboutImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop },
   aboutCtaLabel, aboutCtaLink,
-  aboutTeams[] { name, scope },
   aboutFacts[] { value, label },
   servicesTitle, servicesSubtitle,
   featuredServices[]-> {
@@ -41,9 +46,8 @@ export const homePageQuery = groq`*[_type == "homePage"][0] {
     mainImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt }
   },
   "serviceCategories": *[_type == "servicesPage"][0] { categoryOneLabel, categoryTwoLabel },
-  processTitle, processSubtitle,
-  processSteps[] { stepNumber, shortName, title, description, team, deliverable, question, answer },
-  processTeamLabel, processDeliverableLabel, processFooterNote,
+  servicesCtaLabel, servicesCtaLink,
+  processTeaserTitle, processTeaserText, processCtaLabel, faqCtaLabel,
   projectsTitle, projectsSubtitle,
   featuredProjects[]-> {
     title, slug,
@@ -55,8 +59,17 @@ export const homePageQuery = groq`*[_type == "homePage"][0] {
     category->{ title, slug },
     mainImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt }
   },
-  faqTitle, faqSubtitle, faqItems[] { question, answer },
   ctaTitle, ctaText, ctaButtonLabel, ctaScopeTitle, ctaScopeItems,
+  seo
+}`;
+
+export const surecPageQuery = groq`*[_type == "surecPage"][0] {
+  heroTitle, heroSubtitle,
+  heroImage { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop },
+  stepsTitle, stepsSubtitle,
+  steps[] { stepNumber, title, description, deliverable },
+  deliverableLabel, stepsFooterNote,
+  faqTitle, faqSubtitle, faqItems[] { question, answer },
   seo
 }`;
 
@@ -201,7 +214,8 @@ export const allSlugsForSitemapQuery = groq`{
     "contact": *[_type == "contactPage"][0] { _updatedAt, "noIndex": seo.noIndex },
     "blog": *[_type == "blogPage"][0] { _updatedAt, "noIndex": seo.noIndex },
     "services": *[_type == "servicesPage"][0] { _updatedAt, "noIndex": seo.noIndex },
-    "projects": *[_type == "projectsPage"][0] { _updatedAt, "noIndex": seo.noIndex }
+    "projects": *[_type == "projectsPage"][0] { _updatedAt, "noIndex": seo.noIndex },
+    "surec": *[_type == "surecPage"][0] { _updatedAt, "noIndex": seo.noIndex }
   },
   "blogPosts": *[_type == "blogPost" && defined(slug.current) && !(seo.noIndex == true)] { "slug": slug.current, _updatedAt },
   "services": *[_type == "service" && defined(slug.current) && !(seo.noIndex == true)] { "slug": slug.current, _updatedAt },

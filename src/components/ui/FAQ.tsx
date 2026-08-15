@@ -26,7 +26,7 @@ export function FAQ({ items, className = "" }: { items: FAQItem[], className?: s
             <div key={index} className="border-t border-border last:border-b">
               <button
                 onClick={() => setActiveIndex(isOpen ? null : index)}
-                className="group flex w-full items-start justify-between gap-6 py-6 text-left transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="group flex w-full cursor-pointer items-start justify-between gap-6 py-6 text-left transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 aria-expanded={isOpen}
               >
                 <span className="display max-w-[46ch] text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary md:text-xl">

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { QuickQuoteModal } from "@/components/forms/QuickQuoteModal";
-import { ArchitecturalMark } from "@/components/ui/ArchitecturalMark";
 
 interface HomeCtaSectionProps {
   title?: string;
@@ -36,8 +35,7 @@ export function HomeCtaSection({
   return (
     <>
       <section className="relative overflow-hidden border-t border-border bg-background py-20 md:py-28">
-        {/* Fotoğrafsız kapanış bölümüne pafta hissi veren filigran ve köşe işaretleri */}
-        <ArchitecturalMark className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 text-accent/5 lg:h-96 lg:w-96" />
+        {/* Fotoğrafsız kapanış bölümüne pafta hissi veren köşe işaretleri */}
         <span
           aria-hidden
           className="pointer-events-none absolute left-4 top-4 h-6 w-6 border-l border-t border-accent/30 sm:left-8 sm:top-8"

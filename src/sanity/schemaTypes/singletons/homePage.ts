@@ -8,10 +8,9 @@ export const homePageType = defineType({
     { name: "hero", title: "Hero Bölümü" },
     { name: "about", title: "Hakkımızda Önizleme" },
     { name: "services", title: "Hizmetler Önizleme" },
-    { name: "process", title: "Proje Süreci Bölümü" },
+    { name: "process", title: "Süreç & SSS Yönlendirme" },
     { name: "projects", title: "Projeler Önizleme" },
     { name: "blog", title: "Blog Önizleme" },
-    { name: "faq", title: "Sıkça Sorulan Sorular" },
     { name: "cta", title: "Kapanış (CTA) Bölümü" },
     { name: "seo", title: "SEO Ayarları" },
   ],
@@ -22,7 +21,7 @@ export const homePageType = defineType({
       title: "Hero Başlık",
       type: "string",
       group: "hero",
-      initialValue: "Arsadan anahtara, tek çatı altında",
+      initialValue: "Mimarlık Ofisiyiz",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -31,7 +30,7 @@ export const homePageType = defineType({
       type: "text",
       rows: 3,
       group: "hero",
-      initialValue: "Mimari proje, belediye ruhsatı, şantiye ve teslim süreçlerinin tamamı Dervişoğlu Mimarlık bünyesindeki ekipler tarafından yürütülür.",
+      initialValue: "Mimari proje, iç mimarlık ve uygulama süreçlerini bir arada yürütüyoruz.",
     }),
     defineField({
       name: "heroImage",
@@ -43,7 +42,7 @@ export const homePageType = defineType({
     }),
     defineField({
       name: "heroCtaLabel",
-      title: "Hero Buton Metni",
+      title: "Hero Birincil Buton Metni",
       type: "string",
       group: "hero",
       description: "Bu buton hızlı teklif formunu açar.",
@@ -51,7 +50,7 @@ export const homePageType = defineType({
     }),
     defineField({
       name: "heroCtaLink",
-      title: "Hero Buton Linki",
+      title: "Hero Birincil Buton Linki",
       type: "object",
       group: "hero",
       fields: [
@@ -90,46 +89,83 @@ export const homePageType = defineType({
         }),
       ],
     }),
+    defineField({
+      name: "heroSecondaryCtaLabel",
+      title: "Hero İkincil Buton Metni",
+      type: "string",
+      group: "hero",
+      description: "İkinci butonda görünecek metin.",
+      initialValue: "Hizmetlerimizi İnceleyin",
+    }),
+    defineField({
+      name: "heroSecondaryCtaLink",
+      title: "Hero İkincil Buton Linki",
+      type: "object",
+      group: "hero",
+      fields: [
+        defineField({
+          name: "linkType",
+          title: "Link Tipi",
+          type: "string",
+          options: {
+            list: [
+              { title: "İç Sayfa (Önerilen)", value: "internal" },
+              { title: "Manuel Link", value: "manual" },
+            ],
+            layout: "radio",
+          },
+          initialValue: "manual",
+        }),
+        defineField({
+          name: "internal",
+          title: "İç Sayfa Seç",
+          type: "reference",
+          to: [
+            { type: "service" },
+            { type: "project" },
+            { type: "blogPost" },
+            { type: "aboutPage" },
+            { type: "contactPage" },
+          ],
+          hidden: ({ parent }) => parent?.linkType !== "internal",
+        }),
+        defineField({
+          name: "manual",
+          title: "Manuel Link",
+          type: "string",
+          initialValue: "/hizmetler",
+          description: "Örn: /hizmetler, /projeler (Link başındaki / işaretini unutmayın)",
+          hidden: ({ parent }) => parent?.linkType !== "manual",
+        }),
+      ],
+    }),
 
     // About Preview Group
-    defineField({ name: "aboutTitle", title: "Hakkımızda Bölüm Başlığı", type: "string", group: "about", initialValue: "Proje ve Uygulama Tek Elden Yürütülür" }),
+    defineField({ name: "aboutTitle", title: "Hakkımızda Bölüm Başlığı", type: "string", group: "about", initialValue: "Hakkımızda" }),
     defineField({
       name: "aboutSubtitle",
       title: "Hakkımızda Bölüm Alt Başlığı",
       type: "text",
       rows: 3,
       group: "about",
-      initialValue: "Mimari projelendirme, resmi süreç takibi ve şantiye uygulaması firmamız bünyesindeki üç ayrı ekip tarafından yürütülmektedir. Süreç boyunca tek muhatap Dervişoğlu Mimarlık'tır.",
+      initialValue: "2004'ten bu yana mimarlık ve iç mimarlık hizmeti veriyoruz.",
     }),
-    defineField({ name: "aboutText", title: "Hakkımızda Kısa Yazı", type: "array", of: [{ type: "block" }], group: "about" }),
     defineField({
-      name: "aboutTeams",
-      title: "Ekipler Listesi",
+      name: "aboutText",
+      title: "Hakkımızda Kısa Yazı",
       type: "array",
+      of: [{ type: "block" }],
       group: "about",
-      description: "Bölümde alt alta listelenen ekipler. Boş bırakılırsa liste gösterilmez.",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({ name: "name", title: "Ekip Adı", type: "string", validation: (Rule) => Rule.required() }),
-            defineField({ name: "scope", title: "Sorumluluk Alanı", type: "text", rows: 2 }),
-          ],
-          preview: { select: { title: "name", subtitle: "scope" } },
-        },
-      ],
       initialValue: [
         {
-          name: "Belediye & Resmi İş Takip Ekibi",
-          scope: "İmar durumu, ruhsat başvurusu, revizyon takibi ve iskan süreçleri",
-        },
-        {
-          name: "İç Mimari Tasarım Ekibi",
-          scope: "Konsept, avan ve uygulama projeleri, 3D görselleştirme, malzeme kararları",
-        },
-        {
-          name: "Şantiye & Saha Kontrol Ekibi",
-          scope: "İmalat denetimi, malzeme kontrolü, ilerleme ve hakediş raporlaması",
+          _type: "block",
+          style: "normal",
+          children: [
+            {
+              _type: "span",
+              text: "Mimari proje, iç mimarlık ve ruhsat süreçlerini kendi ekiplerimizle yürütür, uygulamayı sahada bizzat takip ederiz.",
+            },
+          ],
         },
       ],
     }),
@@ -138,7 +174,7 @@ export const homePageType = defineType({
       title: "Öne Çıkan Rakamlar",
       type: "array",
       group: "about",
-      description: "Ekipler listesinin altında büyük punto ile görünen rakamlar. Boş bırakılırsa gösterilmez.",
+      description: "Bölümde büyük punto ile görünen rakamlar. Boş bırakılırsa gösterilmez.",
       of: [
         {
           type: "object",
@@ -150,8 +186,8 @@ export const homePageType = defineType({
         },
       ],
       initialValue: [
-        { value: "2004", label: "Aileden gelen müteahhitlik tecrübesi" },
-        { value: "50+", label: "Tamamlanmış bina projesi" },
+        { value: "2004", label: "Mimarlık ve iç mimarlık tecrübesi" },
+        { value: "50+", label: "Tamamlanmış proje" },
       ],
     }),
     defineField({
@@ -183,120 +219,51 @@ export const homePageType = defineType({
       group: "services",
       of: [{ type: "reference", to: [{ type: "service" }] }],
     }),
+    defineField({
+      name: "servicesCtaLabel",
+      title: "\"Tüm Hizmetleri İncele\" Buton Metni",
+      type: "string",
+      group: "services",
+      description: "Boş bırakılırsa buton gösterilmez.",
+      initialValue: "Tüm Hizmetleri İncele",
+    }),
+    defineField({
+      name: "servicesCtaLink",
+      title: "Buton Linki",
+      type: "string",
+      group: "services",
+      initialValue: "/hizmetler",
+    }),
 
-    // Process Preview Group
+    // Process & FAQ Yönlendirme Group
     defineField({
-      name: "processTitle",
-      title: "Süreç Bölüm Başlığı",
+      name: "processTeaserTitle",
+      title: "Bölüm Başlığı",
       type: "string",
       group: "process",
-      initialValue: "Proje Sürecimiz",
+      initialValue: "Çalışma Sürecimiz",
     }),
     defineField({
-      name: "processSubtitle",
-      title: "Süreç Bölüm Alt Başlığı",
+      name: "processTeaserText",
+      title: "Bölüm Açıklaması",
       type: "text",
       rows: 3,
       group: "process",
-      initialValue: "Arsanın imar durumunun çıkarılmasından yapı kullanma izninin alınmasına kadar yürütülen aşamalar, her aşamada görev alan ekip ve teslim edilen belgeler aşağıda yer almaktadır.",
+      initialValue: "Tasarımdan uygulamaya kadar süreci nasıl yönettiğimizi ve sık sorulan soruları inceleyebilirsiniz.",
     }),
     defineField({
-      name: "processSteps",
-      title: "Süreç Aşamaları",
-      type: "array",
-      group: "process",
-      description: "Aşamalar hem bu bölümde hem de hero altındaki aşama şeridinde kullanılır.",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({ name: "stepNumber", title: "Aşama Numarası", type: "string", description: "Örn: 01" }),
-            defineField({ name: "shortName", title: "Kısa Ad", type: "string", description: "Hero altındaki şeritte görünen tek kelimelik ad. Örn: Keşif" }),
-            defineField({ name: "title", title: "Aşama Başlığı", type: "string" }),
-            defineField({ name: "description", title: "Açıklama", type: "text", rows: 3 }),
-            defineField({ name: "team", title: "Yürüten Ekip", type: "string" }),
-            defineField({ name: "deliverable", title: "Teslim Edilen", type: "string" }),
-            defineField({ name: "question", title: "Bu Aşamadaki Soru", type: "string" }),
-            defineField({ name: "answer", title: "Sorunun Cevabı", type: "text", rows: 3 }),
-          ],
-          preview: { select: { title: "title", subtitle: "stepNumber" } },
-        },
-      ],
-      initialValue: [
-        {
-          stepNumber: "01",
-          shortName: "Keşif",
-          title: "Arsa analizi ve ön fizibilite",
-          description: "İmar durumu çıkarılır, arsada oluşabilecek inşaat alanı ve bağımsız bölüm sayısı hesaplanır. Kat karşılığı görüşülüyorsa oran bu aşamada değerlendirilir.",
-          team: "İç Mimari Tasarım Ekibi",
-          deliverable: "İmar durumu raporu ve ön yerleşim taslağı",
-          question: "Ön fizibilite çalışması ücretli midir?",
-          answer: "Hayır. Arsanın imar durumunun çıkarılması ve yaklaşık bağımsız bölüm sayısının hesaplanması ilk görüşmenin kapsamındadır.",
-        },
-        {
-          stepNumber: "02",
-          shortName: "Proje",
-          title: "Konsept ve avan proje",
-          description: "Mekân kurgusu, cephe kararları ve malzeme yönü belirlenir. Çalışma 3D görselleştirme ile sunulur; onay alınmadan bir sonraki aşamaya geçilmez.",
-          team: "İç Mimari Tasarım Ekibi",
-          deliverable: "Avan proje ve 3D görseller",
-          question: "Mimari proje ve konsept tasarım süreci ne kadar sürer?",
-          answer: "Projenin ölçeğine ve alan büyüklüğüne bağlı olarak konsept tasarım ve avan proje hazırlığı ortalama 2 ila 4 hafta içinde tamamlanır.",
-        },
-        {
-          stepNumber: "03",
-          shortName: "Ruhsat",
-          title: "Uygulama projeleri ve yapı ruhsatı",
-          description: "Mimari, statik, mekanik ve elektrik projeleri hazırlanarak belediyeye sunulur. Evrak takibi, revizyon ve onay süreçleri firmamız tarafından yürütülür.",
-          team: "Belediye & Resmi İş Takip Ekibi",
-          deliverable: "Onaylı projeler ve yapı ruhsatı",
-          question: "Belediye ve ruhsat süreçlerini firmanız mı yürütüyor?",
-          answer: "Evet. Projeler ilgili ilçe ve büyükşehir belediyesi yönetmeliklerine uygun hazırlanır, başvuru ve onay süreci uçtan uca firmamızca takip edilir. Ayrıca bir danışmanla çalışmanız gerekmez.",
-        },
-        {
-          stepNumber: "04",
-          shortName: "İnşaat",
-          title: "Şantiye ve imalat",
-          description: "Kaba yapıdan ince işçiliğe kadar tüm imalat yürütülür. Deprem yönetmeliğine uygunluk ve malzeme kalitesi saha ekibimiz tarafından denetlenir.",
-          team: "Şantiye & Saha Kontrol Ekibi",
-          deliverable: "Dönemsel ilerleme ve hakediş raporu",
-          question: "Malzeme seçimleri ne zaman yapılır, sürpriz maliyet oluşur mu?",
-          answer: "Seramik, parke, armatür ve cephe kaplaması dahil tüm malzemeler sözleşme öncesinde belirlenerek mahal listesine işlenir. Liste sözleşmenin eki olduğundan şantiye sürecinde sürpriz maliyet oluşmaz.",
-        },
-        {
-          stepNumber: "05",
-          shortName: "Teslim",
-          title: "Yapı kullanma izni ve anahtar teslim",
-          description: "Yapı denetim onayları, iskan başvurusu ve abonelik işlemleri tamamlanır. Teslim sonrası kullanım sürecinde de destek verilir.",
-          team: "Belediye & Resmi İş Takip Ekibi",
-          deliverable: "Yapı kullanma izni (iskan) ve anahtar teslimi",
-          question: "Teslim sonrasında bir sorun oluşursa nasıl bir yol izleniyor?",
-          answer: "İmalat kaynaklı sorunlar için teslim sonrası garanti süresi sözleşmede tanımlanır. Projeyi yürüten ekip bu süre boyunca aynı iletişim kanallarından ulaşılabilir durumdadır.",
-        },
-      ],
-    }),
-    defineField({
-      name: "processTeamLabel",
-      title: "\"Yürüten Ekip\" Etiketi",
+      name: "processCtaLabel",
+      title: "\"Süreci İncele\" Buton Metni",
       type: "string",
       group: "process",
-      initialValue: "Yürüten ekip",
+      initialValue: "Çalışma Sürecimizi İnceleyin",
     }),
     defineField({
-      name: "processDeliverableLabel",
-      title: "\"Teslim Edilen\" Etiketi",
+      name: "faqCtaLabel",
+      title: "\"SSS\" Buton Metni",
       type: "string",
       group: "process",
-      initialValue: "Teslim edilen",
-    }),
-    defineField({
-      name: "processFooterNote",
-      title: "Süreç Bölümü Alt Notu",
-      type: "text",
-      rows: 3,
-      group: "process",
-      description: "Aşama listesinin altında görünen açıklama. Boş bırakılırsa gösterilmez.",
-      initialValue: "Aşamaların tamamı Dervişoğlu Mimarlık bünyesindeki ekipler tarafından yürütülür. Süreler proje ölçeğine göre değişiklik gösterir ve sözleşmede tarihleriyle tanımlanır.",
+      initialValue: "Sıkça Sorulan Sorular",
     }),
 
     // Projects Preview Group
@@ -335,58 +302,6 @@ export const homePageType = defineType({
       type: "array",
       group: "blog",
       of: [{ type: "reference", to: [{ type: "blogPost" }] }],
-    }),
-
-    // FAQ Group
-    defineField({
-      name: "faqTitle",
-      title: "SSS Bölüm Başlığı",
-      type: "string",
-      group: "faq",
-      initialValue: "Sıkça Sorulan Sorular",
-    }),
-    defineField({
-      name: "faqSubtitle",
-      title: "SSS Bölüm Alt Başlığı",
-      type: "text",
-      rows: 2,
-      group: "faq",
-      initialValue: "Mimari proje, imar ve ruhsat süreçleri ile inşaat uygulamalarımız hakkında merak edilenler.",
-    }),
-    defineField({
-      name: "faqItems",
-      title: "Sorular",
-      type: "array",
-      group: "faq",
-      description: "Belirli bir aşamaya ait sorular Proje Süreci bölümünde cevaplanır. Burada yalnızca genel sorular yer alır. Boş bırakılırsa bölüm gösterilmez.",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({ name: "question", title: "Soru", type: "string", validation: (Rule) => Rule.required() }),
-            defineField({ name: "answer", title: "Cevap", type: "text", rows: 4, validation: (Rule) => Rule.required() }),
-          ],
-          preview: { select: { title: "question" } },
-        },
-      ],
-      initialValue: [
-        {
-          question: "Mevcut yapılar için tadilat, güçlendirme ve iç mimari yenileme hizmeti veriyor musunuz?",
-          answer: "Evet. Mevcut yapıların rölöve ve statik durum analizlerini yaparak iç mimari konsept tasarımı, tadilat uygulamaları ve şantiye yönetimi hizmeti sunmaktayız.",
-        },
-        {
-          question: "Hangi bölgelerde hizmet veriyorsunuz?",
-          answer: "Mimari ve tasarım hizmetlerinde merkezimiz Arnavutköy olmak üzere tüm Marmara Bölgesi'nde; inşaat ve uygulama işlerinde ise Marmara Bölgesi genelinde çalışmaktayız.",
-        },
-        {
-          question: "Kat karşılığı anlaşmalarda oran nasıl belirleniyor?",
-          answer: "Oran; arsanın imar durumuna, konumuna, oluşacak bağımsız bölüm sayısına ve inşaat maliyetine göre hesaplanır. İlk görüşmede yapılan ön fizibilite çalışmasının ardından somut bir oran değerlendirilebilir hale gelir.",
-        },
-        {
-          question: "Deprem yönetmeliğine uygunluk nasıl güvence altına alınıyor?",
-          answer: "Statik projeler güncel Türkiye Bina Deprem Yönetmeliği'ne göre hazırlanır, bağımsız yapı denetim kuruluşu tarafından onaylanır ve imalat aşamasında kendi saha ekibimiz tarafından ayrıca denetlenir.",
-        },
-      ],
     }),
 
     // CTA Group

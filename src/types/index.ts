@@ -202,19 +202,9 @@ export interface ServicesPage extends InnerPageWithCta, ServiceCategoryLabels {
 
 export interface ProcessStep {
   stepNumber?: string;
-  /** Hero altındaki aşama şeridinde görünen kısa ad */
-  shortName?: string;
   title: string;
   description?: string;
-  team?: string;
   deliverable?: string;
-  question?: string;
-  answer?: string;
-}
-
-export interface AboutTeam {
-  name: string;
-  scope?: string;
 }
 
 export interface AboutFact {
@@ -233,38 +223,47 @@ export interface HomePage {
   heroImage?: SanityImage;
   heroCtaLabel?: string;
   heroCtaLink?: CtaLink;
+  heroSecondaryCtaLabel?: string;
+  heroSecondaryCtaLink?: CtaLink;
   aboutTitle?: string;
   aboutSubtitle?: string;
   aboutText?: any[];
   aboutImage?: SanityImage;
   aboutCtaLabel?: string;
   aboutCtaLink?: string;
-  aboutTeams?: AboutTeam[];
   aboutFacts?: AboutFact[];
   servicesTitle?: string;
   servicesSubtitle?: string;
   featuredServices?: Service[];
   /** Kategori başlıkları Hizmetler Sayfası dokümanından okunur (tek kaynak). */
   serviceCategories?: ServiceCategoryLabels;
-  processTitle?: string;
-  processSubtitle?: string;
-  processSteps?: ProcessStep[];
-  processTeamLabel?: string;
-  processDeliverableLabel?: string;
-  processFooterNote?: string;
+  servicesCtaLabel?: string;
+  servicesCtaLink?: string;
+  processTeaserTitle?: string;
+  processTeaserText?: string;
+  processCtaLabel?: string;
+  faqCtaLabel?: string;
   projectsTitle?: string;
   projectsSubtitle?: string;
   featuredProjects?: Project[];
   blogTitle?: string;
   blogSubtitle?: string;
   featuredPosts?: BlogPost[];
-  faqTitle?: string;
-  faqSubtitle?: string;
-  faqItems?: FaqItem[];
   ctaTitle?: string;
   ctaText?: string;
   ctaButtonLabel?: string;
   ctaScopeTitle?: string;
   ctaScopeItems?: string[];
   seo?: SeoSettings;
+}
+
+export interface SurecPage extends BasePage {
+  stepsTitle?: string;
+  stepsSubtitle?: string;
+  steps?: ProcessStep[];
+  deliverableLabel?: string;
+  stepsFooterNote?: string;
+  faqTitle?: string;
+  faqSubtitle?: string;
+  faqItems?: FaqItem[];
 }

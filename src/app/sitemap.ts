@@ -16,7 +16,7 @@ type SitemapPage = {
 };
 
 type SitemapData = {
-  pages?: Record<"home" | "about" | "contact" | "blog" | "services" | "projects", SitemapPage | null>;
+  pages?: Record<"home" | "about" | "contact" | "blog" | "services" | "projects" | "surec", SitemapPage | null>;
   blogPosts?: SitemapItem[];
   services?: SitemapItem[];
   projects?: SitemapItem[];
@@ -42,6 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/blog`, lastModified: lastModified(pages?.blog?._updatedAt), changeFrequency: "weekly", priority: 0.9 },
     { url: `${base}/hizmetler`, lastModified: lastModified(pages?.services?._updatedAt), changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/projeler`, lastModified: lastModified(pages?.projects?._updatedAt), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${base}/surec`, lastModified: lastModified(pages?.surec?._updatedAt), changeFrequency: "monthly", priority: 0.7 },
   ];
 
   const staticRoutes = staticRouteEntries.filter((route) => {
@@ -52,6 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (path === "/blog") return !pages?.blog?.noIndex;
     if (path === "/hizmetler") return !pages?.services?.noIndex;
     if (path === "/projeler") return !pages?.projects?.noIndex;
+    if (path === "/surec") return !pages?.surec?.noIndex;
     return true;
   });
 

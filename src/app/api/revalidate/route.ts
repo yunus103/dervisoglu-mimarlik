@@ -36,6 +36,7 @@ const singletonTags: Record<string, string> = {
   blogPage: "blogPage",
   servicesPage: "servicesPage",
   projectsPage: "projectsPage",
+  surecPage: "surec",
   faq: "faq",
 };
 
@@ -46,6 +47,7 @@ const sitemapPageTypes = new Set([
   "blogPage",
   "servicesPage",
   "projectsPage",
+  "surecPage",
 ]);
 
 function readSlug(value: unknown): string | undefined {
