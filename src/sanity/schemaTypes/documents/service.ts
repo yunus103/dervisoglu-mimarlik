@@ -34,7 +34,7 @@ export const serviceType = defineType({
       options: {
         list: [
           { title: "Mimari & Tasarım Hizmetleri", value: "mimari-tasarim" },
-          { title: "İnşaat & Uygulama Hizmetleri", value: "insaat-uygulama" },
+          { title: "Uygulama & Yapım Süreçleri", value: "insaat-uygulama" },
         ],
         layout: "radio",
       },

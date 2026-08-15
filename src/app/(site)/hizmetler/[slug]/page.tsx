@@ -50,7 +50,7 @@ export default async function ServicePage({ params }: Props) {
 
   const categoryLabel =
     service.category === "insaat-uygulama"
-      ? servicesPage?.categoryTwoLabel || "İnşaat & Uygulama Hizmetleri"
+      ? servicesPage?.categoryTwoLabel || "Uygulama & Yapım Süreçleri"
       : servicesPage?.categoryOneLabel || "Mimari & Tasarım Hizmetleri";
 
   const others = otherServices ?? [];

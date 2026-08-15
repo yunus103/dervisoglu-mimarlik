@@ -25,7 +25,7 @@ export function groupServicesByCategory(
     },
     {
       key: "insaat-uygulama",
-      label: labels?.categoryTwoLabel || "İnşaat & Uygulama Hizmetleri",
+      label: labels?.categoryTwoLabel || "Uygulama & Yapım Süreçleri",
       items: [],
     },
   ];
